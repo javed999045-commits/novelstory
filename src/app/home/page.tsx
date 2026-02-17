@@ -19,6 +19,7 @@ import {
   BookUser,
   Settings,
   LogOut,
+  Crown,
 } from 'lucide-react';
 
 import { Logo } from '@/components/icons/Logo';
@@ -154,6 +155,12 @@ export default function HomePage() {
                             <Link href="/creator/dashboard">
                                 <PenSquare className="mr-2 h-4 w-4" />
                                 <span>Creator Mode</span>
+                            </Link>
+                        </DropdownMenuItem>
+                         <DropdownMenuItem asChild>
+                            <Link href="/admin/dashboard">
+                                <Crown className="mr-2 h-4 w-4" />
+                                <span>Admin Mode</span>
                             </Link>
                         </DropdownMenuItem>
                         <DropdownMenuItem asChild>
