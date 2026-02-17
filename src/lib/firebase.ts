@@ -15,24 +15,25 @@ const firebaseConfig = {
 let app: FirebaseApp | null = null;
 let auth: Auth | null = null;
 
-if (firebaseConfig.apiKey && firebaseConfig.apiKey !== 'YOUR_API_KEY') {
-  app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
-  auth = getAuth(app);
-} else {
-    console.warn("Firebase is not configured. Please add your Firebase credentials to the .env file. Auth features will be disabled.");
-}
-
-
-// Handle email link sign-in on app load
-if (typeof window !== 'undefined' && auth && isSignInWithEmailLink(auth, window.location.href)) {
-    let email = window.localStorage.getItem('emailForSignIn');
-    if (email) {
-        signInWithEmailLink(auth, email, window.location.href)
-            .catch((error) => {
-                console.error("Failed to sign in with email link", error);
-            });
+// Only initialize on the client-side to prevent build errors.
+if (typeof window !== 'undefined') {
+  if (firebaseConfig.apiKey && firebaseConfig.apiKey !== 'YOUR_API_KEY') {
+    app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
+    auth = getAuth(app);
+    
+    // Handle email link sign-in on app load
+    if (isSignInWithEmailLink(auth, window.location.href)) {
+        let email = window.localStorage.getItem('emailForSignIn');
+        if (email) {
+            signInWithEmailLink(auth, email, window.location.href)
+                .catch((error) => {
+                    console.error("Failed to sign in with email link", error);
+                });
+        }
     }
+  } else {
+      console.warn("Firebase is not configured. Please add your Firebase credentials to the .env file. Auth features will be disabled.");
+  }
 }
-
 
 export { app, auth };
