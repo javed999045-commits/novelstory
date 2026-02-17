@@ -45,7 +45,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         }
       }).catch((error) => {
         // Handle Errors here.
-        console.error(error);
         if (error.code === 'auth/configuration-not-found') {
             toast({ 
                 variant: 'destructive', 

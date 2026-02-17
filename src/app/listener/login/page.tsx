@@ -37,7 +37,6 @@ export default function ListenerLoginPage() {
     try {
         await signInWithRedirect(auth, provider);
     } catch (error: any) {
-        console.error("Google login initiation failed:", error);
         if (error.code === 'auth/configuration-not-found') {
              toast({
                 variant: 'destructive',
