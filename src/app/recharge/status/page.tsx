@@ -1,13 +1,14 @@
-
 'use client';
 
+import { Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { ArrowLeft, Clock, Home, ListChecks } from 'lucide-react';
+import { Skeleton } from '@/components/ui/skeleton';
 
-export default function StatusPage() {
+function StatusPageComponent() {
     const router = useRouter();
     const searchParams = useSearchParams();
 
@@ -75,5 +76,43 @@ export default function StatusPage() {
                 </Card>
             </main>
         </div>
+    );
+}
+
+function LoadingSkeleton() {
+    return (
+        <div className="min-h-screen bg-background text-foreground">
+            <header className="sticky top-0 z-10 bg-background/80 backdrop-blur-sm border-b border-border p-4">
+                <div className="container mx-auto flex items-center gap-4">
+                    <Skeleton className="h-10 w-10" />
+                    <Skeleton className="h-6 w-48" />
+                </div>
+            </header>
+            <main className="container mx-auto p-4 md:p-6 max-w-lg">
+                <Card>
+                    <CardHeader className="items-center text-center">
+                        <Skeleton className="h-20 w-20 rounded-full" />
+                        <Skeleton className="h-8 w-1/2 mt-4" />
+                        <Skeleton className="h-5 w-3/4 mt-2" />
+                    </CardHeader>
+                    <CardContent className="space-y-6">
+                        <Skeleton className="h-24 w-full" />
+                        <Skeleton className="h-24 w-full" />
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <Skeleton className="h-10 w-full" />
+                            <Skeleton className="h-10 w-full" />
+                        </div>
+                    </CardContent>
+                </Card>
+            </main>
+        </div>
+    );
+}
+
+export default function StatusPage() {
+    return (
+        <Suspense fallback={<LoadingSkeleton />}>
+            <StatusPageComponent />
+        </Suspense>
     );
 }
