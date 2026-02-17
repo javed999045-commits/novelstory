@@ -33,21 +33,9 @@ export default function ListenerLoginPage() {
         return;
     }
     const provider = new GoogleAuthProvider();
-    try {
-      await signInWithRedirect(auth, provider);
-    } catch (error: any) {
-      console.error(error);
-      if (error.code === 'auth/configuration-not-found') {
-          toast({ 
-              variant: 'destructive', 
-              title: 'Login failed: Configuration not found.', 
-              description: 'Please ensure Google Sign-In is enabled in your Firebase console and a project support email is set.',
-              duration: 10000
-          });
-      } else {
-        toast({ variant: 'destructive', title: `Google login failed: ${error.code}`, description: error.message });
-      }
-    }
+    // The signInWithRedirect promise resolves when the redirect is initiated.
+    // Errors are caught by getRedirectResult in the main AuthProvider, which is the correct place to handle them.
+    await signInWithRedirect(auth, provider);
   };
 
   const handleEmailLogin = async (e: React.FormEvent) => {
