@@ -1,4 +1,3 @@
-
 'use client';
 
 import Link from 'next/link';
@@ -28,14 +27,19 @@ export default function AdminLayout({
 }) {
   const pathname = usePathname();
   const router = useRouter();
-  const { user, role, loading } = useAuth();
+  const { user, role, loading, logout } = useAuth();
 
 
   useEffect(() => {
     if (!loading && (role !== 'admin')) {
-      router.replace('/login');
+      router.replace('/creator/login');
     }
   }, [user, role, loading, router]);
+
+  const handleLogout = async () => {
+    await logout();
+    router.push('/creator/login');
+  }
 
   if (loading || role !== 'admin') {
       return (
@@ -89,11 +93,9 @@ export default function AdminLayout({
                     </SidebarMenuButton>
                 </SidebarMenuItem>
                  <SidebarMenuItem>
-                    <SidebarMenuButton asChild>
-                        <Link href="/login">
-                            <LogOut/>
-                            <span>Logout</span>
-                        </Link>
+                    <SidebarMenuButton onClick={handleLogout}>
+                        <LogOut/>
+                        <span>Logout</span>
                     </SidebarMenuButton>
                 </SidebarMenuItem>
            </SidebarMenu>

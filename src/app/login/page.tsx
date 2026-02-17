@@ -17,6 +17,7 @@ import { Logo } from "@/components/icons/Logo";
 import { KeySquare } from "lucide-react";
 import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/context/auth-context';
+import Link from 'next/link';
 
 export default function KeyLoginPage() {
   const router = useRouter();
@@ -40,11 +41,12 @@ export default function KeyLoginPage() {
     try {
       const result = await loginWithKey(key);
       if (result.success) {
-        toast({ title: "Login Successful!" });
-        if (result.role === 'admin') {
-          router.push('/admin/dashboard');
-        } else {
+        if (result.role === 'user') {
+          toast({ title: "Login Successful!" });
           router.push('/home');
+        } else {
+           setErrorMessage("Invalid user key. Please use the Creator Login for master keys.");
+           toast({ variant: 'destructive', title: "Login Failed", description: "This appears to be a creator key." });
         }
       } else {
         setErrorMessage(result.message || "An unknown error occurred.");
@@ -66,9 +68,9 @@ export default function KeyLoginPage() {
             <Logo className="h-16 w-16 text-primary" />
           </div>
           <CardTitle className="text-3xl font-headline font-bold text-card-foreground">
-            HearHere
+            Listener Login
           </CardTitle>
-          <CardDescription>Enter your Login Key to continue</CardDescription>
+          <CardDescription>Enter your key to access the audio library.</CardDescription>
         </CardHeader>
         <CardContent className="grid gap-4">
           {errorMessage && (
@@ -84,7 +86,7 @@ export default function KeyLoginPage() {
                 <Input 
                   id="login-key" 
                   type="text" 
-                  placeholder="Enter your key..." 
+                  placeholder="Enter your access key..." 
                   required 
                   value={key}
                   onChange={(e) => setKey(e.target.value)}
@@ -93,9 +95,15 @@ export default function KeyLoginPage() {
               </div>
             </div>
             <Button type="submit" size="lg" className="w-full font-bold" disabled={isLoading}>
-              {isLoading ? 'Verifying...' : 'Login'}
+              {isLoading ? 'Verifying...' : 'Unlock & Listen'}
             </Button>
           </form>
+           <div className="text-center text-xs text-muted-foreground">
+              Are you a creator?{' '}
+              <Link href="/creator/login" className="underline text-primary">
+                  Login here
+              </Link>
+          </div>
         </CardContent>
       </Card>
     </main>
