@@ -27,14 +27,20 @@ export default function ListenerLoginPage() {
           <CardDescription>Sign in to continue listening</CardDescription>
         </CardHeader>
         <CardContent className="grid gap-3">
-          <Button size="lg" className="w-full bg-emerald-500 hover:bg-emerald-600 text-white font-bold">
-            <Phone className="mr-2 h-5 w-5" /> Continue with Phone
+          <Button asChild size="lg" className="w-full bg-emerald-500 hover:bg-emerald-600 text-white font-bold">
+            <Link href="/home">
+              <Phone className="mr-2 h-5 w-5" /> Continue with Phone
+            </Link>
           </Button>
-          <Button size="lg" variant="secondary" className="w-full font-bold">
-            <GoogleIcon className="mr-2 h-5 w-5" /> Continue with Google
+          <Button asChild size="lg" variant="secondary" className="w-full font-bold">
+            <Link href="/home">
+              <GoogleIcon className="mr-2 h-5 w-5" /> Continue with Google
+            </Link>
           </Button>
-          <Button size="lg" variant="secondary" className="w-full font-bold">
-            <Mail className="mr-2 h-5 w-5" /> Continue with Email
+          <Button asChild size="lg" variant="secondary" className="w-full font-bold">
+            <Link href="/home">
+              <Mail className="mr-2 h-5 w-5" /> Continue with Email
+            </Link>
           </Button>
           <div className="relative my-2">
             <div className="absolute inset-0 flex items-center">
@@ -65,4 +71,3 @@ export default function ListenerLoginPage() {
     </main>
   );
 }
-
