@@ -15,7 +15,7 @@ import {
   SidebarFooter,
   SidebarInset,
 } from '@/components/ui/sidebar';
-import { Crown, LayoutDashboard, BadgeCheck, Landmark, FileText, User, LogOut } from 'lucide-react';
+import { Crown, LayoutDashboard, BadgeCheck, Landmark, FileText, User, LogOut, Settings } from 'lucide-react';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 
@@ -31,6 +31,7 @@ export default function AdminLayout({
     { href: '/admin/verify', label: 'Verify Payments', icon: BadgeCheck },
     { href: '/admin/reconciliation', label: 'Reconciliation', icon: Landmark },
     { href: '/admin/reports', label: 'Reports', icon: FileText },
+    { href: '/admin/settings', label: 'Settings', icon: Settings },
   ];
 
   return (
@@ -48,7 +49,7 @@ export default function AdminLayout({
               <SidebarMenuItem key={item.href}>
                 <SidebarMenuButton
                   asChild
-                  isActive={pathname === item.href}
+                  isActive={pathname.startsWith(item.href)}
                 >
                   <Link href={item.href}>
                     <item.icon />

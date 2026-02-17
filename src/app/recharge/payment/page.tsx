@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useSearchParams, useRouter } from 'next/navigation';
@@ -6,8 +5,9 @@ import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { ArrowLeft, QrCode, ClipboardCopy } from 'lucide-react';
+import { ArrowLeft, ClipboardCopy } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import Image from 'next/image';
 
 export default function PaymentPage() {
     const router = useRouter();
@@ -61,7 +61,13 @@ export default function PaymentPage() {
                                 <CardTitle className="text-lg text-center">Scan QR Code to Pay</CardTitle>
                                 <div className="flex justify-center">
                                     <div className="bg-white p-4 rounded-lg">
-                                      <QrCode className="w-48 h-48 text-black"/>
+                                      <Image 
+                                        src="https://placehold.co/200x200/fafafa/000000?text=Your+QR+Code"
+                                        alt="UPI QR Code"
+                                        width={192}
+                                        height={192}
+                                        className="w-48 h-48"
+                                      />
                                     </div>
                                 </div>
                                 <p className="text-center text-muted-foreground font-semibold">audiobookfm@hdfcbank</p>
