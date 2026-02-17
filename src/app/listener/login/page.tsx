@@ -29,6 +29,10 @@ export default function ListenerLoginPage() {
   const [emailSent, setEmailSent] = useState(false);
 
   const handleGoogleLogin = async () => {
+    if (!auth) {
+        toast({ variant: 'destructive', title: 'Firebase not configured.', description: 'Please add your API keys to .env file' });
+        return;
+    }
     const provider = new GoogleAuthProvider();
     try {
       await signInWithPopup(auth, provider);
@@ -42,6 +46,10 @@ export default function ListenerLoginPage() {
 
   const handleEmailLogin = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!auth) {
+        toast({ variant: 'destructive', title: 'Firebase not configured.', description: 'Please add your API keys to .env file' });
+        return;
+    }
     if (!email) {
         toast({ variant: 'destructive', title: 'Email is required.' });
         return;

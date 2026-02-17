@@ -33,6 +33,10 @@ export default function SettingsPage() {
     const { toast } = useToast();
 
     const handleLogout = async () => {
+        if (!auth) {
+            toast({ variant: 'destructive', title: 'Firebase not configured.' });
+            return;
+        }
         try {
             await signOut(auth);
             toast({ title: 'Logged out successfully.' });
