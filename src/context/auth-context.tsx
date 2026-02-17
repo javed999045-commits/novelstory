@@ -6,6 +6,7 @@ import { onAuthStateChanged, User, getRedirectResult } from 'firebase/auth';
 import { auth } from '@/lib/firebase';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useToast } from '@/hooks/use-toast';
+import { useRouter } from 'next/navigation';
 
 type AuthContextType = {
   user: User | null;
@@ -18,6 +19,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const { toast } = useToast();
+  const router = useRouter();
 
   useEffect(() => {
     if (!auth) {
@@ -29,14 +31,22 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     getRedirectResult(auth)
       .then((result) => {
         if (result) {
-          // This is the signed-in user.
-          // The `onAuthStateChanged` observer will handle setting the user state.
+          // User has just signed in via redirect.
           toast({ title: 'Logged in successfully!' });
+
+          const role = localStorage.getItem('loginRedirectRole');
+          if (role === 'creator') {
+            localStorage.removeItem('loginRedirectRole');
+            router.replace('/creator/dashboard');
+          } else {
+            // Default to home page for listeners or if no role is set
+            router.replace('/home');
+          }
         }
       }).catch((error) => {
         // Handle Errors here.
         console.error(error);
-        toast({ variant: 'destructive', title: 'Login failed', description: error.message });
+        toast({ variant: 'destructive', title: `Login failed: ${error.code}`, description: error.message });
       });
     
     // Then, set up the auth state listener
@@ -49,7 +59,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     });
 
     return () => unsubscribe();
-  }, [toast]);
+  }, [toast, router]);
 
   if (loading) {
     return (

@@ -1,4 +1,6 @@
+'use client';
 
+import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -13,6 +15,13 @@ import { Headphones, PenSquare } from "lucide-react";
 import Link from "next/link";
 
 export default function WelcomePage() {
+  const router = useRouter();
+
+  const handleRoleSelection = (role: 'listener' | 'creator') => {
+    localStorage.setItem('loginRedirectRole', role);
+    router.push('/listener/login');
+  }
+
   return (
     <main className="flex items-center justify-center min-h-screen bg-background p-4">
       <Card className="w-full max-w-sm border-border bg-card text-card-foreground">
@@ -26,24 +35,20 @@ export default function WelcomePage() {
           <CardDescription>Listen | Create | Earn</CardDescription>
         </CardHeader>
         <CardContent className="grid gap-4">
-          <Button asChild size="lg" className="h-auto py-4">
-            <Link href="/listener/login">
-              <div className="flex flex-col items-center">
-                <Headphones className="mb-2 h-6 w-6" />
-                <span className="font-bold text-lg">I'M A LISTENER</span>
-                <span className="font-normal text-sm text-primary-foreground/80">(Listen to Stories)</span>
-              </div>
-            </Link>
+          <Button size="lg" className="h-auto py-4" onClick={() => handleRoleSelection('listener')}>
+            <div className="flex flex-col items-center">
+              <Headphones className="mb-2 h-6 w-6" />
+              <span className="font-bold text-lg">I'M A LISTENER</span>
+              <span className="font-normal text-sm text-primary-foreground/80">(Listen to Stories)</span>
+            </div>
           </Button>
 
-           <Button asChild size="lg" variant="secondary" className="h-auto py-4">
-            <Link href="/listener/login">
-              <div className="flex flex-col items-center">
-                <PenSquare className="mb-2 h-6 w-6" />
-                <span className="font-bold text-lg">I'M A CREATOR</span>
-                <span className="font-normal text-sm text-secondary-foreground/80">(Upload Stories)</span>
-              </div>
-            </Link>
+           <Button size="lg" variant="secondary" className="h-auto py-4" onClick={() => handleRoleSelection('creator')}>
+            <div className="flex flex-col items-center">
+              <PenSquare className="mb-2 h-6 w-6" />
+              <span className="font-bold text-lg">I'M A CREATOR</span>
+              <span className="font-normal text-sm text-secondary-foreground/80">(Upload Stories)</span>
+            </div>
           </Button>
 
           <div className="relative my-2">
