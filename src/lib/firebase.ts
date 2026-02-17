@@ -26,11 +26,6 @@ if (firebaseConfig.apiKey && firebaseConfig.apiKey !== 'YOUR_API_KEY') {
 // Handle email link sign-in on app load
 if (typeof window !== 'undefined' && auth && isSignInWithEmailLink(auth, window.location.href)) {
     let email = window.localStorage.getItem('emailForSignIn');
-    if (!email) {
-      // User opened a link on a different device. To prevent session fixation
-      // attacks, ask the user to provide the email again. For example:
-      email = window.prompt('Please provide your email for confirmation');
-    }
     if (email) {
         signInWithEmailLink(auth, email, window.location.href)
             .catch((error) => {

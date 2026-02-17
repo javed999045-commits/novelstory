@@ -19,7 +19,7 @@ import { GoogleIcon } from "@/components/icons/GoogleIcon";
 import { Mail } from "lucide-react";
 import Link from "next/link";
 import { auth } from '@/lib/firebase';
-import { GoogleAuthProvider, signInWithPopup, sendSignInLinkToEmail } from 'firebase/auth';
+import { GoogleAuthProvider, signInWithRedirect, sendSignInLinkToEmail } from 'firebase/auth';
 import { useToast } from '@/hooks/use-toast';
 
 export default function ListenerLoginPage() {
@@ -35,12 +35,10 @@ export default function ListenerLoginPage() {
     }
     const provider = new GoogleAuthProvider();
     try {
-      await signInWithPopup(auth, provider);
-      toast({ title: 'Logged in successfully!' });
-      router.push('/home');
-    } catch (error) {
+      await signInWithRedirect(auth, provider);
+    } catch (error: any) {
       console.error(error);
-      toast({ variant: 'destructive', title: 'Google login failed.', description: 'Please try again.' });
+      toast({ variant: 'destructive', title: `Google login failed: ${error.code}`, description: error.message });
     }
   };
 
@@ -63,9 +61,9 @@ export default function ListenerLoginPage() {
         window.localStorage.setItem('emailForSignIn', email);
         setEmailSent(true);
         toast({ title: 'Check your email', description: 'A sign-in link has been sent to your email address.' });
-    } catch (error) {
+    } catch (error: any) {
         console.error(error);
-        toast({ variant: 'destructive', title: 'Failed to send email.', description: 'Please check the email address and try again.' });
+        toast({ variant: 'destructive', title: `Failed to send email: ${error.code}`, description: error.message });
     }
   };
 
