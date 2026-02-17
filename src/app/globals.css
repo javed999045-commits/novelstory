@@ -82,3 +82,28 @@
     @apply bg-background text-foreground;
   }
 }
+
+@layer utilities {
+  @media print {
+    body.prevent-screenshot > * {
+      visibility: hidden;
+    }
+    body.prevent-screenshot::before {
+      visibility: visible;
+      content: "Content protection is active. Screenshots and printing are disabled.";
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background: hsl(var(--background));
+      color: hsl(var(--foreground));
+      font-size: 1.25rem;
+      padding: 2rem;
+      text-align: center;
+    }
+  }
+}

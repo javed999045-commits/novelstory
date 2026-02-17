@@ -1,3 +1,10 @@
 {
-  "placeholderImages": []
+  "placeholderImages": [
+    {
+      "id": "horror-story-1",
+      "description": "A spooky, dark forest at night.",
+      "imageUrl": "https://images.unsplash.com/photo-1728538515520-374c52cf0ea9?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxMHx8c3Bvb2t5JTIwZm9yZXN0fGVufDB8fHx8MTc3MTMwNzE1OHww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "spooky forest"
+    }
+  ]
 }

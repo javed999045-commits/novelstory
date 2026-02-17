@@ -20,6 +20,7 @@ const transactionHistory = [
     date: "1 day ago",
     amount: "15",
     type: "spend",
+    link: "/player/horror-story-1",
   },
   {
     id: 3,
@@ -52,7 +53,7 @@ export default function WalletPage() {
               <span>Your Coins</span>
               <div className="flex items-center gap-2 text-2xl font-bold text-primary">
                 <Coins className="h-6 w-6" />
-                <span>150</span>
+                <span>135</span>
               </div>
             </CardTitle>
           </CardHeader>
@@ -71,26 +72,47 @@ export default function WalletPage() {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="space-y-4">
+            <div className="space-y-1">
               {transactionHistory.map((item, index) => (
                 <div key={item.id}>
-                  <div className="flex justify-between items-center">
-                    <div>
-                      <p className="font-semibold">{item.description}</p>
-                      <p className="text-sm text-muted-foreground">{item.date}</p>
+                  {item.link ? (
+                    <Link href={item.link} className="block -m-3 p-3 rounded-lg hover:bg-secondary/50 transition-colors">
+                      <div className="flex justify-between items-center">
+                        <div>
+                          <p className="font-semibold">{item.description}</p>
+                          <p className="text-sm text-muted-foreground">{item.date}</p>
+                        </div>
+                        <div
+                          className={`font-bold flex items-center gap-1 ${
+                            item.type === "purchase"
+                              ? "text-emerald-500"
+                              : "text-destructive"
+                          }`}
+                        >
+                          {item.type === 'purchase' ? '+' : '-'}{item.amount}
+                          <Coins className="h-4 w-4" />
+                        </div>
+                      </div>
+                    </Link>
+                  ) : (
+                    <div className="flex justify-between items-center p-3">
+                      <div>
+                        <p className="font-semibold">{item.description}</p>
+                        <p className="text-sm text-muted-foreground">{item.date}</p>
+                      </div>
+                      <div
+                        className={`font-bold flex items-center gap-1 ${
+                          item.type === "purchase"
+                            ? "text-emerald-500"
+                            : "text-destructive"
+                        }`}
+                      >
+                        {item.type === 'purchase' ? '+' : '-'}{item.amount}
+                        <Coins className="h-4 w-4" />
+                      </div>
                     </div>
-                    <div
-                      className={`font-bold flex items-center gap-1 ${
-                        item.type === "purchase"
-                          ? "text-emerald-500"
-                          : "text-destructive"
-                      }`}
-                    >
-                      {item.type === 'purchase' ? '+' : '-'}{item.amount}
-                      <Coins className="h-4 w-4" />
-                    </div>
-                  </div>
-                  {index < transactionHistory.length - 1 && <Separator className="mt-4" />}
+                  )}
+                  {index < transactionHistory.length - 1 && <Separator className="my-1" />}
                 </div>
               ))}
             </div>
