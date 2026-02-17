@@ -8,8 +8,10 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ArrowLeft, ClipboardCopy } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import Image from 'next/image';
+import { Suspense } from 'react';
+import { Skeleton } from '@/components/ui/skeleton';
 
-export default function PaymentPage() {
+function PaymentForm() {
     const router = useRouter();
     const searchParams = useSearchParams();
     const { toast } = useToast();
@@ -104,5 +106,43 @@ export default function PaymentPage() {
                 </Card>
             </main>
         </div>
+    );
+}
+
+
+function LoadingSkeleton() {
+    return (
+        <div className="min-h-screen bg-background text-foreground">
+            <header className="sticky top-0 z-10 bg-background/80 backdrop-blur-sm border-b border-border p-4">
+                <div className="container mx-auto flex items-center gap-4">
+                    <Skeleton className="h-10 w-10" />
+                    <Skeleton className="h-6 w-48" />
+                </div>
+            </header>
+            <main className="container mx-auto p-4 md:p-6 max-w-lg">
+                <Card>
+                    <CardHeader>
+                        <Skeleton className="h-8 w-3/4 mx-auto" />
+                        <Skeleton className="h-5 w-1/2 mx-auto mt-2" />
+                    </CardHeader>
+                    <CardContent className="space-y-6">
+                        <Skeleton className="h-10 w-full" />
+                        <div className="space-y-4">
+                            <Skeleton className="h-48 w-48 mx-auto" />
+                            <Skeleton className="h-5 w-1/2 mx-auto" />
+                        </div>
+                        <Skeleton className="h-12 w-full" />
+                    </CardContent>
+                </Card>
+            </main>
+        </div>
+    )
+}
+
+export default function PaymentPage() {
+    return (
+        <Suspense fallback={<LoadingSkeleton />}>
+            <PaymentForm />
+        </Suspense>
     );
 }

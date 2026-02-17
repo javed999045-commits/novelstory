@@ -1,6 +1,6 @@
-
 'use client';
 
+import { Suspense } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
@@ -13,6 +13,7 @@ import { Input } from '@/components/ui/input';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Checkbox } from '@/components/ui/checkbox';
 import { ArrowLeft, UploadCloud } from 'lucide-react';
+import { Skeleton } from '@/components/ui/skeleton';
 
 const formSchema = z.object({
   utr: z.string().min(12, 'UTR must be at least 12 characters.').max(15, 'UTR cannot be more than 15 characters.'),
@@ -25,8 +26,7 @@ const formSchema = z.object({
   }),
 });
 
-
-export default function ConfirmPage() {
+function ConfirmPaymentForm() {
     const router = useRouter();
     const searchParams = useSearchParams();
     const { toast } = useToast();
@@ -171,5 +171,57 @@ export default function ConfirmPage() {
                 </Card>
             </main>
         </div>
+    );
+}
+
+function LoadingSkeleton() {
+    return (
+        <div className="min-h-screen bg-background text-foreground">
+            <header className="sticky top-0 z-10 bg-background/80 backdrop-blur-sm border-b border-border p-4">
+                <div className="container mx-auto flex items-center gap-4">
+                    <Skeleton className="h-10 w-10 rounded-md" />
+                    <Skeleton className="h-6 w-48" />
+                </div>
+            </header>
+            <main className="container mx-auto p-4 md:p-6 max-w-2xl">
+                <Card>
+                    <CardHeader>
+                        <Skeleton className="h-8 w-1/2" />
+                        <Skeleton className="h-5 w-3/4 mt-2" />
+                    </CardHeader>
+                    <CardContent className="space-y-8 pt-6">
+                        <div className="space-y-2">
+                           <Skeleton className="h-4 w-1/4" />
+                           <Skeleton className="h-10 w-full" />
+                        </div>
+                         <div className="space-y-2">
+                           <Skeleton className="h-4 w-1/4" />
+                           <div className="flex flex-col space-y-2">
+                             <Skeleton className="h-6 w-3/4" />
+                             <Skeleton className="h-6 w-3/4" />
+                           </div>
+                        </div>
+                         <div className="space-y-2">
+                           <Skeleton className="h-4 w-1/4" />
+                           <Skeleton className="h-10 w-full" />
+                        </div>
+                         <div className="space-y-2">
+                           <Skeleton className="h-4 w-1/4" />
+                           <Skeleton className="h-32 w-full" />
+                        </div>
+                        <Skeleton className="h-12 w-full" />
+                    </CardContent>
+                </Card>
+            </main>
+        </div>
+    );
+}
+
+
+export default function ConfirmPage() {
+    return (
+        <Suspense fallback={<LoadingSkeleton />}>
+            <ConfirmPaymentForm />
+        </Suspense>
     );
 }
