@@ -20,6 +20,7 @@ import {
   Crown,
   Mic,
   Book,
+  Wand2,
 } from 'lucide-react';
 import { auth } from '@/lib/firebase';
 import { signOut } from 'firebase/auth';
@@ -28,7 +29,7 @@ import { useRouter } from 'next/navigation';
 import { Logo } from '@/components/icons/Logo';
 import { novels as novelsData, type Novel } from '@/lib/novels';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
 import { useToast } from '@/hooks/use-toast';
 import { Badge } from '@/components/ui/badge';
@@ -42,6 +43,7 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { useAuth } from '@/context/auth-context';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { personalizedRecommendations, type PersonalizedRecommendationsOutput } from '@/ai/flows/personalized-recommendations';
 
 
 function NovelCard({ novel }: { novel: Novel }) {
@@ -116,6 +118,8 @@ export default function HomePage() {
   const { user } = useAuth();
   const router = useRouter();
   const { toast } = useToast();
+  const [recommendations, setRecommendations] = useState<PersonalizedRecommendationsOutput['recommendations'] | null>(null);
+  const [isGenerating, setIsGenerating] = useState(false);
 
   const handleLogout = async () => {
     if (!auth) {
@@ -130,6 +134,47 @@ export default function HomePage() {
         toast({ variant: 'destructive', title: 'Logout failed.' });
     }
   }
+
+  const handleGetRecommendations = async () => {
+    setIsGenerating(true);
+    setRecommendations(null);
+
+    const listeningHistory = novelsData.flatMap(novel =>
+      novel.episodes
+        .filter(episode => episode.unlocked || (episode.progress && episode.progress > 0))
+        .map(episode => ({
+          title: `${novel.title} - ${episode.title}`,
+          genre: novel.genres.join(', '),
+          author: novel.author,
+          description: novel.description,
+        }))
+    ).slice(0, 5);
+
+    if (listeningHistory.length === 0) {
+      toast({
+        variant: 'destructive',
+        title: 'Not enough listening history',
+        description: 'Listen to some episodes to get personalized recommendations.',
+      });
+      setIsGenerating(false);
+      return;
+    }
+
+    try {
+      const result = await personalizedRecommendations({ listeningHistory });
+      setRecommendations(result.recommendations);
+    } catch (error) {
+      console.error(error);
+      toast({
+        variant: 'destructive',
+        title: 'Failed to get recommendations',
+        description: 'There was an error while generating recommendations. Please try again.',
+      });
+    } finally {
+      setIsGenerating(false);
+    }
+  };
+
 
   return (
     <div className="min-h-screen bg-background text-foreground">
@@ -227,6 +272,55 @@ export default function HomePage() {
       </header>
 
       <main className="container mx-auto p-4 md:p-6 space-y-8">
+        <section>
+          <Card className="bg-primary/10 border-primary">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Wand2 />
+                For You
+              </CardTitle>
+              <CardDescription>
+                Get personalized recommendations based on your listening history.
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <Button onClick={handleGetRecommendations} disabled={isGenerating}>
+                {isGenerating ? 'Generating...' : 'Generate Recommendations'}
+              </Button>
+            </CardContent>
+          </Card>
+        </section>
+
+        {isGenerating && (
+          <div className="space-y-4">
+            <h2 className="text-2xl font-bold">Just For You...</h2>
+            <Card><CardContent className="p-4 pt-4"><p>Generating recommendations...</p></CardContent></Card>
+          </div>
+        )}
+
+        {recommendations && recommendations.length > 0 && (
+          <section>
+            <h2 className="text-2xl font-bold mb-4">Your Personalized Recommendations</h2>
+            <div className="space-y-4">
+              {recommendations.map((rec, index) => (
+                <Card key={index} className="bg-secondary/50">
+                  <CardHeader>
+                    <CardTitle>{rec.title}</CardTitle>
+                    <CardDescription>by {rec.author} • {rec.genre}</CardDescription>
+                  </CardHeader>
+                  <CardContent className="pt-0 space-y-2">
+                    <p className="text-sm">{rec.summary}</p>
+                    <div className="p-3 bg-background/50 rounded-md">
+                      <p className="text-xs font-bold text-primary">Why you'll like it:</p>
+                      <p className="text-sm text-muted-foreground">{rec.reason}</p>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          </section>
+        )}
+        
         <div>
             <h1 className="text-2xl font-bold mb-4">Featured Novels</h1>
             <div className="space-y-6">
@@ -239,3 +333,4 @@ export default function HomePage() {
     </div>
   );
 }
+
