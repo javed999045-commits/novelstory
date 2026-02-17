@@ -37,7 +37,7 @@ export default function WelcomePage() {
           </Button>
 
            <Button asChild size="lg" variant="secondary" className="h-auto py-4">
-            <Link href="/creator/login">
+            <Link href="/listener/login">
               <div className="flex flex-col items-center">
                 <PenSquare className="mb-2 h-6 w-6" />
                 <span className="font-bold text-lg">I'M A CREATOR</span>

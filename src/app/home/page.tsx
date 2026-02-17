@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState } from 'react';
@@ -8,19 +9,21 @@ import {
   Heart,
   BookOpen,
   Star,
-  Users,
   Bell,
   Search,
   PlusCircle,
   User,
-  Book,
-  Mic,
-  PenSquare,
   BookUser,
+  PenSquare,
   Settings,
   LogOut,
   Crown,
+  Mic,
+  Book,
 } from 'lucide-react';
+import { auth } from '@/lib/firebase';
+import { signOut } from 'firebase/auth';
+import { useRouter } from 'next/navigation';
 
 import { Logo } from '@/components/icons/Logo';
 import { novels as novelsData, type Novel } from '@/lib/novels';
@@ -28,7 +31,6 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
 import { useToast } from '@/hooks/use-toast';
-import { cn } from '@/lib/utils';
 import { Badge } from '@/components/ui/badge';
 import {
   DropdownMenu,
@@ -38,6 +40,9 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import { useAuth } from '@/context/auth-context';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+
 
 function NovelCard({ novel }: { novel: Novel }) {
     const { toast } = useToast();
@@ -108,6 +113,19 @@ function NovelCard({ novel }: { novel: Novel }) {
 export default function HomePage() {
   const [novels, setNovels] = useState<Novel[]>(novelsData);
   const [coinBalance, setCoinBalance] = useState(150);
+  const { user } = useAuth();
+  const router = useRouter();
+  const { toast } = useToast();
+
+  const handleLogout = async () => {
+    try {
+        await signOut(auth);
+        toast({ title: 'Logged out successfully.' });
+        router.push('/login');
+    } catch (error) {
+        toast({ variant: 'destructive', title: 'Logout failed.' });
+    }
+  }
 
   return (
     <div className="min-h-screen bg-background text-foreground">
@@ -117,65 +135,87 @@ export default function HomePage() {
                 <Link href="/home">
                     <Logo className="h-8 w-8 text-primary" />
                 </Link>
-                <div className="hidden md:flex items-center gap-2 text-lg font-bold">
-                    <Coins className="h-5 w-5 text-yellow-400" />
-                    <span>{coinBalance}</span>
-                </div>
+                {user && (
+                    <div className="hidden md:flex items-center gap-2 text-lg font-bold">
+                        <Coins className="h-5 w-5 text-yellow-400" />
+                        <span>{coinBalance}</span>
+                    </div>
+                )}
             </div>
             <div className="flex items-center gap-1 md:gap-2">
-                <Button asChild variant="outline" size="sm">
-                    <Link href="/recharge">
-                        <PlusCircle className="h-4 w-4" />
-                        <span className="hidden md:inline ml-2">Add Coins</span>
-                    </Link>
-                </Button>
+                {user && (
+                    <Button asChild variant="outline" size="sm">
+                        <Link href="/recharge">
+                            <PlusCircle className="h-4 w-4" />
+                            <span className="hidden md:inline ml-2">Add Coins</span>
+                        </Link>
+                    </Button>
+                )}
                 <Button variant="ghost" size="icon">
                     <Search className="h-5 w-5" />
                 </Button>
-                <Button variant="ghost" size="icon">
-                    <Bell className="h-5 w-5" />
-                </Button>
+                {user && (
+                    <Button variant="ghost" size="icon">
+                        <Bell className="h-5 w-5" />
+                    </Button>
+                )}
                 <Separator orientation="vertical" className="h-6 mx-1 md:mx-2" />
                 <DropdownMenu>
                     <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" size="icon" title="My Account">
-                            <User className="h-5 w-5" />
+                        <Button variant="ghost" className="p-0 rounded-full h-8 w-8" title="My Account">
+                             <Avatar className="h-8 w-8">
+                                <AvatarImage src={user?.photoURL ?? undefined} />
+                                <AvatarFallback>{user ? (user.displayName?.[0] ?? user.email?.[0] ?? 'U') : <User className="h-5 w-5" />}</AvatarFallback>
+                            </Avatar>
                         </Button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end">
-                        <DropdownMenuLabel>My Account</DropdownMenuLabel>
-                        <DropdownMenuSeparator />
-                        <DropdownMenuItem asChild>
-                            <Link href="/library">
-                                <BookUser className="mr-2 h-4 w-4" />
-                                <span>My Library</span>
-                            </Link>
-                        </DropdownMenuItem>
-                        <DropdownMenuItem asChild>
-                            <Link href="/creator/dashboard">
-                                <PenSquare className="mr-2 h-4 w-4" />
-                                <span>Creator Mode</span>
-                            </Link>
-                        </DropdownMenuItem>
-                         <DropdownMenuItem asChild>
-                            <Link href="/admin/dashboard">
-                                <Crown className="mr-2 h-4 w-4" />
-                                <span>Admin Mode</span>
-                            </Link>
-                        </DropdownMenuItem>
-                        <DropdownMenuItem asChild>
-                            <Link href="/settings">
-                                <Settings className="mr-2 h-4 w-4" />
-                                <span>Settings</span>
-                            </Link>
-                        </DropdownMenuItem>
-                        <DropdownMenuSeparator />
-                        <DropdownMenuItem asChild>
-                            <Link href="/login">
-                                <LogOut className="mr-2 h-4 w-4" />
-                                <span>Logout</span>
-                            </Link>
-                        </DropdownMenuItem>
+                        {user ? (
+                            <>
+                                <DropdownMenuLabel>{user.displayName ?? user.email}</DropdownMenuLabel>
+                                <DropdownMenuSeparator />
+                                <DropdownMenuItem asChild>
+                                    <Link href="/library">
+                                        <BookUser className="mr-2 h-4 w-4" />
+                                        <span>My Library</span>
+                                    </Link>
+                                </DropdownMenuItem>
+                                <DropdownMenuItem asChild>
+                                    <Link href="/creator/dashboard">
+                                        <PenSquare className="mr-2 h-4 w-4" />
+                                        <span>Creator Mode</span>
+                                    </Link>
+                                </DropdownMenuItem>
+                                <DropdownMenuItem asChild>
+                                    <Link href="/admin/dashboard">
+                                        <Crown className="mr-2 h-4 w-4" />
+                                        <span>Admin Mode</span>
+                                    </Link>
+                                </DropdownMenuItem>
+                                <DropdownMenuItem asChild>
+                                    <Link href="/settings">
+                                        <Settings className="mr-2 h-4 w-4" />
+                                        <span>Settings</span>
+                                    </Link>
+                                </DropdownMenuItem>
+                                <DropdownMenuSeparator />
+                                <DropdownMenuItem onClick={handleLogout}>
+                                    <LogOut className="mr-2 h-4 w-4" />
+                                    <span>Logout</span>
+                                </DropdownMenuItem>
+                            </>
+                        ) : (
+                             <>
+                                <DropdownMenuLabel>Guest</DropdownMenuLabel>
+                                <DropdownMenuSeparator />
+                                <DropdownMenuItem asChild>
+                                    <Link href="/listener/login">
+                                        <LogOut className="mr-2 h-4 w-4" />
+                                        <span>Login / Sign Up</span>
+                                    </Link>
+                                </DropdownMenuItem>
+                             </>
+                        )}
                     </DropdownMenuContent>
                 </DropdownMenu>
             </div>

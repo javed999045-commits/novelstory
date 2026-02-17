@@ -7,23 +7,22 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import {
   ArrowLeft,
-  BookUser,
   ChevronRight,
   Coins,
-  DownloadCloud,
-  History,
-  PlayCircle,
   Settings,
   BookCheck,
   BookX,
+  Copy,
 } from 'lucide-react';
 
 import { novels as novelsData, type Novel } from '@/lib/novels';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
 import { Badge } from '@/components/ui/badge';
+import { useAuth } from '@/context/auth-context';
+import { useToast } from '@/hooks/use-toast';
 
 
 function UnlockedNovelCard({ novel }: { novel: Novel }) {
@@ -71,11 +70,30 @@ function UnlockedNovelCard({ novel }: { novel: Novel }) {
 
 export default function LibraryPage() {
   const router = useRouter();
+  const { user } = useAuth();
+  const { toast } = useToast();
   const [novels, setNovels] = useState<Novel[]>(novelsData);
 
   const unlockedNovels = novels.filter(n => n.episodes.some(e => e.unlocked));
   const totalSpent = novels.flatMap(n => n.episodes).filter(e => e.unlocked).reduce((sum, e) => sum + e.priceInCoins, 0);
   const totalUnlockedEpisodes = novels.flatMap(n => n.episodes).filter(e => e.unlocked).length;
+
+  const handleCopy = (text: string) => {
+    navigator.clipboard.writeText(text);
+    toast({ title: "Copied to clipboard!", description: text });
+  };
+
+  if (!user) {
+    return (
+        <div className="flex flex-col items-center justify-center min-h-screen bg-background text-foreground p-4">
+            <Card className="text-center p-6">
+                <CardTitle>Please log in</CardTitle>
+                <CardDescription className="mt-2">You need to be logged in to view your library.</CardDescription>
+                <Button asChild className="mt-4"><Link href="/listener/login">Login</Link></Button>
+            </Card>
+        </div>
+    )
+  }
 
   return (
     <div className="min-h-screen bg-background text-foreground">
@@ -91,24 +109,36 @@ export default function LibraryPage() {
 
       <main className="container mx-auto p-4 md:p-6 space-y-6">
         <Card className="bg-card text-card-foreground">
-            <CardContent className="p-6 flex items-center gap-4">
-                <Avatar className="h-16 w-16">
-                    <AvatarImage src="https://picsum.photos/seed/user/100/100" />
-                    <AvatarFallback>U</AvatarFallback>
-                </Avatar>
-                <div className="flex-grow">
-                    <p className="text-lg font-bold">Alex Doe</p>
-                    <div className="flex items-center gap-2 text-primary font-bold">
-                        <Coins className="h-5 w-5" />
-                        <span>135 Coins</span>
+            <CardContent className="p-6 flex flex-col gap-4">
+                <div className="flex items-center gap-4">
+                    <Avatar className="h-16 w-16">
+                        <AvatarImage src={user.photoURL ?? `https://picsum.photos/seed/user/100/100`} />
+                        <AvatarFallback>{user.displayName?.[0] ?? user.email?.[0] ?? 'U'}</AvatarFallback>
+                    </Avatar>
+                    <div className="flex-grow">
+                        <p className="text-lg font-bold">{user.displayName ?? 'Welcome'}</p>
+                        <p className="text-sm text-muted-foreground">{user.email}</p>
+                        <div className="flex items-center gap-2 text-primary font-bold">
+                            <Coins className="h-5 w-5" />
+                            <span>135 Coins</span>
+                        </div>
+                    </div>
+                    <Button asChild variant="ghost" size="icon">
+                        <Link href="/settings">
+                            <Settings />
+                            <span className="sr-only">Settings</span>
+                        </Link>
+                    </Button>
+                </div>
+                 <div className="text-xs text-muted-foreground bg-secondary/50 p-3 rounded-md space-y-1">
+                    <p className="font-bold text-foreground">Your Unique ID (UID)</p>
+                    <div className="flex items-center justify-between">
+                        <span className="font-mono truncate">{user.uid}</span>
+                        <Button variant="ghost" size="icon" className="h-6 w-6" onClick={() => handleCopy(user.uid)}>
+                            <Copy className="h-4 w-4" />
+                        </Button>
                     </div>
                 </div>
-                 <Button asChild variant="ghost" size="icon">
-                    <Link href="/settings">
-                        <Settings />
-                        <span className="sr-only">Settings</span>
-                    </Link>
-                 </Button>
             </CardContent>
         </Card>
 
@@ -134,9 +164,9 @@ export default function LibraryPage() {
 
         <div className="space-y-4">
             <h2 className='text-xl font-bold'>Unlocked Novels</h2>
-            {unlockedNovels.map(novel => (
+            {unlockedNovels.length > 0 ? unlockedNovels.map(novel => (
                 <UnlockedNovelCard key={novel.id} novel={novel} />
-            ))}
+            )) : <p className="text-muted-foreground">You haven't unlocked any novels yet.</p>}
         </div>
       </main>
     </div>
