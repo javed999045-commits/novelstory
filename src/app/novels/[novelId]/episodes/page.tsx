@@ -265,7 +265,7 @@ export default function EpisodesPage() {
                 <CardDescription>Normal Price: 65 coins</CardDescription>
             </CardHeader>
             <CardContent>
-                <p className="font-bold flex items-center gap-2 text-xl">Offer Price: 50 coins <Badge>Save 15</Badge></p>
+                <div className="font-bold flex items-center gap-2 text-xl">Offer Price: 50 coins <Badge>Save 15</Badge></div>
             </CardContent>
             <CardFooter>
                 <Button className='w-full' disabled>
