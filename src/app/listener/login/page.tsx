@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState } from 'react';
@@ -38,7 +37,16 @@ export default function ListenerLoginPage() {
       await signInWithRedirect(auth, provider);
     } catch (error: any) {
       console.error(error);
-      toast({ variant: 'destructive', title: `Google login failed: ${error.code}`, description: error.message });
+      if (error.code === 'auth/configuration-not-found') {
+          toast({ 
+              variant: 'destructive', 
+              title: 'Login failed: Configuration not found.', 
+              description: 'Please ensure Google Sign-In is enabled in your Firebase console and a project support email is set.',
+              duration: 10000
+          });
+      } else {
+        toast({ variant: 'destructive', title: `Google login failed: ${error.code}`, description: error.message });
+      }
     }
   };
 

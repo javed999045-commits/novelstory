@@ -46,7 +46,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       }).catch((error) => {
         // Handle Errors here.
         console.error(error);
-        toast({ variant: 'destructive', title: `Login failed: ${error.code}`, description: error.message });
+        if (error.code === 'auth/configuration-not-found') {
+            toast({ 
+                variant: 'destructive', 
+                title: 'Login failed: Configuration not found.', 
+                description: 'Please ensure Google Sign-in is enabled in your Firebase console and a support email is set.',
+                duration: 10000
+            });
+        } else {
+            toast({ variant: 'destructive', title: `Login failed: ${error.code}`, description: error.message });
+        }
       });
     
     // Then, set up the auth state listener
