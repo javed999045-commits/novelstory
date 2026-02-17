@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState } from 'react';
@@ -27,10 +26,14 @@ export default function ListenerLoginPage() {
   const { toast } = useToast();
   const [email, setEmail] = useState('');
   const [emailSent, setEmailSent] = useState(false);
+  const [errorMessage, setErrorMessage] = useState('');
 
   const handleGoogleLogin = async () => {
+    setErrorMessage('');
     if (!auth) {
-        toast({ variant: 'destructive', title: 'Firebase not configured.', description: 'Please add your API keys to .env file' });
+        const msg = 'Firebase not configured. Please add your API keys to .env file';
+        setErrorMessage(msg);
+        toast({ variant: 'destructive', title: 'Firebase not configured.', description: msg });
         return;
     }
     const provider = new GoogleAuthProvider();
@@ -38,13 +41,17 @@ export default function ListenerLoginPage() {
         await signInWithRedirect(auth, provider);
     } catch (error: any) {
         if (error.code === 'auth/configuration-not-found') {
+             const msg = 'Please enable Google Sign-In and set a support email in your Firebase project settings.';
+             setErrorMessage(msg);
              toast({
                 variant: 'destructive',
                 title: 'Google Sign-In Not Configured',
-                description: 'Please enable Google Sign-In and set a support email in your Firebase project settings.',
+                description: msg,
                 duration: 9000,
             });
         } else {
+            const msg = `Google login failed: ${error.message}`;
+            setErrorMessage(msg);
             toast({ variant: 'destructive', title: `Google login failed: ${error.code}`, description: error.message });
         }
     }
@@ -52,12 +59,17 @@ export default function ListenerLoginPage() {
 
   const handleEmailLogin = async (e: React.FormEvent) => {
     e.preventDefault();
+    setErrorMessage('');
     if (!auth) {
-        toast({ variant: 'destructive', title: 'Firebase not configured.', description: 'Please add your API keys to .env file' });
+        const msg = 'Firebase not configured. Please add your API keys to .env file';
+        setErrorMessage(msg);
+        toast({ variant: 'destructive', title: 'Firebase not configured.', description: msg });
         return;
     }
     if (!email) {
-        toast({ variant: 'destructive', title: 'Email is required.' });
+        const msg = 'Email is required.';
+        setErrorMessage(msg);
+        toast({ variant: 'destructive', title: msg });
         return;
     }
     const actionCodeSettings = {
@@ -71,6 +83,8 @@ export default function ListenerLoginPage() {
         toast({ title: 'Check your email', description: 'A sign-in link has been sent to your email address.' });
     } catch (error: any) {
         console.error(error);
+        const msg = `Failed to send email: ${error.message}`;
+        setErrorMessage(msg);
         toast({ variant: 'destructive', title: `Failed to send email: ${error.code}`, description: error.message });
     }
   };
@@ -88,6 +102,12 @@ export default function ListenerLoginPage() {
           <CardDescription>Sign in or create an account</CardDescription>
         </CardHeader>
         <CardContent className="grid gap-4">
+          {errorMessage && (
+            <div className="p-3 bg-destructive/10 border border-destructive/50 text-destructive text-sm rounded-md">
+              <p className='font-bold'>Login Failed</p>
+              <p>{errorMessage}</p>
+            </div>
+          )}
           <Button onClick={handleGoogleLogin} size="lg" variant="secondary" className="w-full font-bold">
             <GoogleIcon className="mr-2 h-5 w-5" /> Continue with Google
           </Button>
@@ -110,7 +130,7 @@ export default function ListenerLoginPage() {
             <form onSubmit={handleEmailLogin} className="grid gap-3">
                 <div className="grid gap-2">
                     <Label htmlFor="email" className="sr-only">Email</Label>
-                    <Input id="email" type="email" placeholder="Enter your email" required value={email} onChange={(e) => setEmail(e.target.value)} />
+                    <Input id="email" type="email" placeholder="Enter your email" required value={email} onChange={(e) => { setEmail(e.target.value); setErrorMessage(''); }} />
                 </div>
                 <Button type="submit" size="lg" className="w-full font-bold">
                     <Mail className="mr-2 h-5 w-5" /> Continue with Email
