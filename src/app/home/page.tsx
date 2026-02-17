@@ -29,60 +29,68 @@ import { cn } from '@/lib/utils';
 
 const categories = ['All', 'Stories', 'Podcasts', 'Horror', 'Romance', 'Sci-Fi', 'Comedy'];
 
-function StoryCard({ story, onUnlock, coinBalance }: { story: ImagePlaceholder, onUnlock: (id: string) => void, coinBalance: number }) {
+function StoryCard({ story, onUnlock }: { story: ImagePlaceholder, onUnlock: (id: string) => void }) {
   return (
     <Card
       className={cn(
-        'bg-card text-card-foreground overflow-hidden transition-all hover:shadow-lg hover:border-primary/50 w-full',
+        'bg-card text-card-foreground overflow-hidden transition-all hover:shadow-lg hover:border-primary/50 w-full flex flex-col',
         story.isBundle && 'sm:col-span-2 lg:col-span-2'
       )}
     >
-      <CardContent className="p-0">
-        <div className="relative aspect-[16/9]">
-          <Image
-            src={story.imageUrl}
-            alt={story.description}
-            fill
-            className="object-cover"
-            data-ai-hint={story.imageHint}
-          />
-           {story.priceInCoins > 0 && !story.unlocked && !story.isBundle && (
-            <div className="absolute top-2 left-2 bg-black/50 backdrop-blur-sm text-white text-xs font-bold px-2 py-1 rounded-full flex items-center gap-1">
-                <Coins className="w-3 h-3 text-yellow-400" />
-                {story.priceInCoins}
-            </div>
-           )}
-          {story.isBundle && (
-            <div className="absolute top-2 right-2 bg-primary text-primary-foreground text-xs font-bold px-2 py-1 rounded-full flex items-center gap-1">
-              <Star className="w-3 h-3" />
-              BUNDLE
-            </div>
-          )}
-        </div>
-        <div className="p-4 space-y-3">
-          <h3 className="font-bold font-headline text-lg truncate">
-            {story.title}
-          </h3>
-          <p className="text-sm text-muted-foreground">
-            By {story.author} &bull; {story.duration}
-          </p>
+      <CardContent className="p-0 flex flex-col flex-grow">
+        <Link href={`/episode/${story.id}`} className="block">
+          <div className="relative aspect-[16/9]">
+            <Image
+              src={story.imageUrl}
+              alt={story.description}
+              fill
+              className="object-cover"
+              data-ai-hint={story.imageHint}
+            />
+            {story.priceInCoins > 0 && !story.unlocked && !story.isBundle && (
+              <div className="absolute top-2 left-2 bg-black/50 backdrop-blur-sm text-white text-xs font-bold px-2 py-1 rounded-full flex items-center gap-1">
+                  <Coins className="w-3 h-3 text-yellow-400" />
+                  {story.priceInCoins}
+              </div>
+            )}
+            {story.isBundle && (
+              <div className="absolute top-2 right-2 bg-primary text-primary-foreground text-xs font-bold px-2 py-1 rounded-full flex items-center gap-1">
+                <Star className="w-3 h-3" />
+                BUNDLE
+              </div>
+            )}
+          </div>
+        </Link>
+        <div className="p-4 space-y-3 flex-grow flex flex-col justify-between">
+          <div>
+            <Link href={`/episode/${story.id}`} className="block">
+              <h3 className="font-bold font-headline text-lg truncate hover:underline">
+                {story.title}
+              </h3>
+            </Link>
+            <p className="text-sm text-muted-foreground">
+              By {story.author} &bull; {story.duration}
+            </p>
+          </div>
 
-          {story.unlocked ? (
-            <Button asChild className="w-full font-bold">
-              <Link href={`/player/${story.id}`}>
-                <PlayCircle className="mr-2" />
-                {story.priceInCoins === 0 ? 'Listen for Free' : 'Play'}
-              </Link>
-            </Button>
-          ) : (
-             <Button
-                onClick={() => onUnlock(story.id)}
-                className="w-full font-bold"
-              >
-                <Lock className="mr-2" />
-                Unlock
+          <div className="pt-2">
+            {story.unlocked ? (
+              <Button asChild className="w-full font-bold">
+                <Link href={`/player/${story.id}`}>
+                  <PlayCircle className="mr-2" />
+                  {story.priceInCoins === 0 ? 'Listen for Free' : 'Play'}
+                </Link>
               </Button>
-          )}
+            ) : (
+              <Button
+                  onClick={() => onUnlock(story.id)}
+                  className="w-full font-bold"
+                >
+                  <Lock className="mr-2" />
+                  Unlock
+                </Button>
+            )}
+          </div>
         </div>
       </CardContent>
     </Card>
@@ -190,19 +198,23 @@ export default function HomePage() {
             </h2>
              <Card className="bg-card text-card-foreground overflow-hidden transition-all hover:shadow-lg hover:border-primary/50">
                 <CardContent className="p-0 md:flex md:items-center">
-                    <div className="relative aspect-[16/9] md:aspect-square md:w-1/3 md:flex-shrink-0">
-                        <Image
-                        src={freeEpisode.imageUrl}
-                        alt={freeEpisode.description}
-                        fill
-                        className="object-cover"
-                        data-ai-hint={freeEpisode.imageHint}
-                        />
-                    </div>
+                    <Link href={`/episode/${freeEpisode.id}`} className="block md:w-1/3 md:flex-shrink-0">
+                      <div className="relative aspect-[16/9] md:aspect-square">
+                          <Image
+                          src={freeEpisode.imageUrl}
+                          alt={freeEpisode.description}
+                          fill
+                          className="object-cover"
+                          data-ai-hint={freeEpisode.imageHint}
+                          />
+                      </div>
+                    </Link>
                     <div className="p-4 md:p-6 space-y-3 flex-grow">
-                        <h3 className="font-bold font-headline text-xl md:text-2xl">
-                        {freeEpisode.title}
+                      <Link href={`/episode/${freeEpisode.id}`}>
+                        <h3 className="font-bold font-headline text-xl md:text-2xl hover:underline">
+                          {freeEpisode.title}
                         </h3>
+                      </Link>
                         <p className="text-sm text-muted-foreground">
                         By {freeEpisode.author} &bull; {freeEpisode.duration}
                         </p>
@@ -228,7 +240,7 @@ export default function HomePage() {
           </h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             {trendingStories.map((story) => (
-              <StoryCard key={story.id} story={story} onUnlock={handleUnlock} coinBalance={coinBalance} />
+              <StoryCard key={story.id} story={story} onUnlock={handleUnlock} />
             ))}
           </div>
         </div>
@@ -240,7 +252,7 @@ export default function HomePage() {
           </h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             {newReleases.map((story) => (
-              <StoryCard key={story.id} story={story} onUnlock={handleUnlock} coinBalance={coinBalance} />
+              <StoryCard key={story.id} story={story} onUnlock={handleUnlock} />
             ))}
           </div>
         </div>

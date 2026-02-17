@@ -11,6 +11,10 @@ export type ImagePlaceholder = {
   unlocked: boolean;
   duration: string;
   isBundle?: boolean;
+  category?: string;
+  plays?: number;
+  unlocks?: number;
+  rating?: number;
 };
 
 export const PlaceHolderImages: ImagePlaceholder[] = data.placeholderImages;

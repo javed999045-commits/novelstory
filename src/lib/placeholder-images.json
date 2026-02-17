@@ -4,57 +4,77 @@
       "id": "horror-story-1",
       "title": "The Midnight Forest",
       "author": "H.P. Lovecraft",
-      "description": "A spooky, dark forest at night, where ancient evils lurk.",
+      "description": "A spooky, dark forest at night, where ancient evils lurk and shadows whisper forgotten tales. A lone traveler must navigate the twisting paths, guided only by a flickering lantern, as the forest itself seems to watch with a malevolent intelligence.",
       "imageUrl": "https://images.unsplash.com/photo-1502932346948-26503864144b?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxzcG9va3klMjBmb3Jlc3R8ZW58MHx8fHwxNzczMzA3MTU4fDA&ixlib=rb-4.0.3&q=80&w=1080",
       "imageHint": "spooky forest",
       "priceInCoins": 15,
       "unlocked": true,
-      "duration": "22 min"
+      "duration": "22 min",
+      "category": "Horror",
+      "plays": 12345,
+      "unlocks": 8765,
+      "rating": 4.5
     },
     {
       "id": "sci-fi-adventure-1",
       "title": "Galaxy Drifters",
       "author": "Isaac Asimov",
-      "description": "An adventure in a distant galaxy filled with strange new worlds.",
+      "description": "An adventure in a distant galaxy filled with strange new worlds, exotic alien species, and ancient cosmic mysteries waiting to be uncovered by a ragtag crew of explorers.",
       "imageUrl": "https://images.unsplash.com/photo-1605896561740-fe6569a28dcb?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwyfHxnYWxheHklMjBzcGFjZXxlbnwwfHx8fDE3NzEzMjYwMTB8MA&ixlib=rb-4.1.0&q=80&w=1080",
       "imageHint": "galaxy space",
       "priceInCoins": 25,
       "unlocked": false,
-      "duration": "35 min"
+      "duration": "35 min",
+      "category": "Sci-Fi",
+      "plays": 8765,
+      "unlocks": 4321,
+      "rating": 4.8
     },
     {
       "id": "comedy-special-1",
       "title": "City Giggles",
       "author": "Jerry Seinfeld",
-      "description": "A hilarious take on the absurdities of modern city life.",
+      "description": "A hilarious take on the absurdities of modern city life, from navigating crowded subways to deciphering the unwritten rules of coffee shop etiquette. The first episode is on the house!",
       "imageUrl": "https://images.unsplash.com/photo-1766532573885-8bd94537f1c4?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw5fHxjb21lZHklMjBzdGFnZXxlbnwwfHx8fDE3NzEyMzg0NTd8MA&ixlib=rb-4.1.0&q=80&w=1080",
       "imageHint": "comedy stage",
       "priceInCoins": 0,
       "unlocked": true,
-      "duration": "8 min"
+      "duration": "8 min",
+      "category": "Comedy",
+      "plays": 23456,
+      "unlocks": 23456,
+      "rating": 4.2
     },
     {
       "id": "thriller-bundle-1",
       "title": "Detective Noir Trilogy",
       "author": "Various Authors",
-      "description": "A bundle of 3 gripping detective stories that will keep you on the edge of your seat.",
+      "description": "A bundle of 3 gripping detective stories that will keep you on the edge of your seat. Follow hardened detectives through rain-slicked streets as they solve the city's most baffling crimes.",
       "imageUrl": "https://images.unsplash.com/photo-1709997098518-913accb9e440?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwyfHxkZXRlY3RpdmUlMjBub2lyfGVufDB8fHx8MTc3MTMyNjAwOXww&ixlib=rb-4.1.0&q=80&w=1080",
       "imageHint": "detective noir",
       "priceInCoins": 40,
       "unlocked": false,
       "isBundle": true,
-      "duration": "1h 30m total"
+      "duration": "1h 30m total",
+      "category": "Thriller",
+      "plays": 5432,
+      "unlocks": 1234,
+      "rating": 4.7
     },
     {
       "id": "fantasy-epic-1",
       "title": "The Dragon's Echo",
       "author": "J.R.R. Tolkien",
-      "description": "A grand fantasy epic of dragons, magic, and a kingdom in peril.",
+      "description": "A grand fantasy epic of dragons, magic, and a kingdom in peril. A young hero must rise to fulfill a prophecy and save their homeland from an ancient, fiery threat.",
       "imageUrl": "https://images.unsplash.com/photo-1610926597998-fc7f2c1b89b0?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxmYW50YXN5JTIwZHJhZ29ufGVufDB8fHx8MTc3MTMyNDA0N3ww&ixlib=rb-4.1.0&q=80&w=1080",
       "imageHint": "fantasy dragon",
       "priceInCoins": 30,
       "unlocked": false,
-      "duration": "42 min"
+      "duration": "42 min",
+      "category": "Fantasy",
+      "plays": 9876,
+      "unlocks": 5678,
+      "rating": 4.9
     }
   ]
 }

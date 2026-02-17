@@ -12,12 +12,33 @@ import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
 import { Card, CardContent } from '@/components/ui/card';
 import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from '@/components/ui/popover';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '@/components/ui/tooltip';
+
+import {
   ArrowLeft,
   Play,
   Pause,
   Download,
   Lock,
   AlertTriangle,
+  Wind,
+  Timer,
+  Share2,
 } from 'lucide-react';
 
 export default function PlayerPage() {
@@ -26,6 +47,7 @@ export default function PlayerPage() {
   const { toast } = useToast();
   const [isPlaying, setIsPlaying] = useState(false);
   const [progress, setProgress] = useState(15);
+  const [playbackSpeed, setPlaybackSpeed] = useState(1);
 
   const storyId = params.id as string;
   const story = PlaceHolderImages.find((img) => img.id === storyId);
@@ -42,9 +64,9 @@ export default function PlayerPage() {
       if (isPlaying) {
         setProgress((prev) => (prev >= 100 ? 0 : prev + 1));
       }
-    }, 1000);
+    }, 1000 / playbackSpeed);
     return () => clearInterval(interval);
-  }, [isPlaying]);
+  }, [isPlaying, playbackSpeed]);
 
   useEffect(() => {
     let resizeTimeout: NodeJS.Timeout;
@@ -77,6 +99,13 @@ export default function PlayerPage() {
     toast({
       title: 'Download Started',
       description: 'Downloaded securely. Available for offline playback in-app only.',
+    });
+  };
+
+  const handleSleepTimer = (minutes: number) => {
+    toast({
+      title: 'Sleep Timer Set',
+      description: `Playback will stop in ${minutes} minutes.`,
     });
   };
 
@@ -131,9 +160,8 @@ export default function PlayerPage() {
               <Progress value={progress} />
               <div className="flex justify-between text-xs text-muted-foreground">
                 <span>
-                  0:
-                  {Math.round(progress * 0.6) < 10 ? '0' : ''}
-                  {Math.round(progress * 0.6)}
+                  {Math.floor((progress * 0.6 * (60 * (parseInt(story.duration) / 100))) / 60)}:
+                  {Math.round((progress * 0.6 * (60 * (parseInt(story.duration) / 100))) % 60).toString().padStart(2, '0')}
                 </span>
                 <span>{story.duration}</span>
               </div>
@@ -151,6 +179,52 @@ export default function PlayerPage() {
                   <Play className="w-10 h-10 ml-1" />
                 )}
               </Button>
+            </div>
+
+            <div className="flex justify-center items-center gap-2">
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="outline" className="font-bold">
+                    <Wind className="mr-2 h-4 w-4" />
+                    {playbackSpeed}x
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent>
+                  <DropdownMenuItem onSelect={() => setPlaybackSpeed(0.75)}>0.75x</DropdownMenuItem>
+                  <DropdownMenuItem onSelect={() => setPlaybackSpeed(1)}>1x (Normal)</DropdownMenuItem>
+                  <DropdownMenuItem onSelect={() => setPlaybackSpeed(1.5)}>1.5x</DropdownMenuItem>
+                  <DropdownMenuItem onSelect={() => setPlaybackSpeed(2)}>2x</DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button variant="outline">
+                    <Timer className="mr-2 h-4 w-4" />
+                    Sleep Timer
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-auto p-0">
+                  <div className="flex flex-col">
+                    <Button variant="ghost" className="justify-start" onClick={() => handleSleepTimer(15)}>End in 15 minutes</Button>
+                    <Button variant="ghost" className="justify-start" onClick={() => handleSleepTimer(30)}>End in 30 minutes</Button>
+                    <Button variant="ghost" className="justify-start" onClick={() => handleSleepTimer(60)}>End in 60 minutes</Button>
+                  </div>
+                </PopoverContent>
+              </Popover>
+
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger>
+                    <Button variant="outline" size="icon" disabled>
+                      <Share2 className="h-4 w-4" />
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p>Sharing is disabled for protected content.</p>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
             </div>
 
             <Button size="lg" className="w-full font-bold" onClick={handleDownload}>
