@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState } from 'react';
@@ -16,6 +15,10 @@ import {
   User,
   Book,
   Mic,
+  PenSquare,
+  BookUser,
+  Settings,
+  LogOut,
 } from 'lucide-react';
 
 import { Logo } from '@/components/icons/Logo';
@@ -26,6 +29,14 @@ import { Separator } from '@/components/ui/separator';
 import { useToast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
 import { Badge } from '@/components/ui/badge';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 
 function NovelCard({ novel }: { novel: Novel }) {
     const { toast } = useToast();
@@ -124,11 +135,42 @@ export default function HomePage() {
                     <Bell className="h-5 w-5" />
                 </Button>
                 <Separator orientation="vertical" className="h-6 mx-1 md:mx-2" />
-                <Button asChild variant="ghost" size="icon" title="My Library">
-                  <Link href="/library">
-                    <User className="h-5 w-5" />
-                  </Link>
-                </Button>
+                <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                        <Button variant="ghost" size="icon" title="My Account">
+                            <User className="h-5 w-5" />
+                        </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end">
+                        <DropdownMenuLabel>My Account</DropdownMenuLabel>
+                        <DropdownMenuSeparator />
+                        <DropdownMenuItem asChild>
+                            <Link href="/library">
+                                <BookUser className="mr-2 h-4 w-4" />
+                                <span>My Library</span>
+                            </Link>
+                        </DropdownMenuItem>
+                        <DropdownMenuItem asChild>
+                            <Link href="/creator/dashboard">
+                                <PenSquare className="mr-2 h-4 w-4" />
+                                <span>Creator Mode</span>
+                            </Link>
+                        </DropdownMenuItem>
+                        <DropdownMenuItem asChild>
+                            <Link href="/settings">
+                                <Settings className="mr-2 h-4 w-4" />
+                                <span>Settings</span>
+                            </Link>
+                        </DropdownMenuItem>
+                        <DropdownMenuSeparator />
+                        <DropdownMenuItem asChild>
+                            <Link href="/login">
+                                <LogOut className="mr-2 h-4 w-4" />
+                                <span>Logout</span>
+                            </Link>
+                        </DropdownMenuItem>
+                    </DropdownMenuContent>
+                </DropdownMenu>
             </div>
         </div>
       </header>
