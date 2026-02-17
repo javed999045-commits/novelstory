@@ -15,7 +15,7 @@ import {
   SidebarFooter,
   SidebarInset,
 } from '@/components/ui/sidebar';
-import { Crown, LayoutDashboard, CheckBadge, Bank, FileText, User, LogOut } from 'lucide-react';
+import { Crown, LayoutDashboard, CheckBadge, Landmark, FileText, User, LogOut } from 'lucide-react';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 
@@ -29,7 +29,7 @@ export default function AdminLayout({
   const menuItems = [
     { href: '/admin/dashboard', label: 'Dashboard', icon: LayoutDashboard },
     { href: '/admin/verify', label: 'Verify Payments', icon: CheckBadge },
-    { href: '/admin/reconciliation', label: 'Reconciliation', icon: Bank },
+    { href: '/admin/reconciliation', label: 'Reconciliation', icon: Landmark },
     { href: '/admin/reports', label: 'Reports', icon: FileText },
   ];
 
