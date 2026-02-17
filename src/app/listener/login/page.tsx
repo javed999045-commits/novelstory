@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState } from 'react';
@@ -33,7 +34,6 @@ export default function ListenerLoginPage() {
     if (!auth) {
         const msg = 'Firebase not configured. Please add your API keys to .env file';
         setErrorMessage(msg);
-        toast({ variant: 'destructive', title: 'Firebase not configured.', description: msg });
         return;
     }
     const provider = new GoogleAuthProvider();
@@ -41,14 +41,8 @@ export default function ListenerLoginPage() {
         await signInWithRedirect(auth, provider);
     } catch (error: any) {
         if (error.code === 'auth/configuration-not-found') {
-             const msg = 'Please enable Google Sign-In and set a support email in your Firebase project settings.';
+             const msg = 'ACTION REQUIRED: In your Firebase Console, go to Authentication > Sign-in method and enable Google as a provider. You must also set a project Support Email in Project Settings.';
              setErrorMessage(msg);
-             toast({
-                variant: 'destructive',
-                title: 'Google Sign-In Not Configured',
-                description: msg,
-                duration: 9000,
-            });
         } else {
             const msg = `Google login failed: ${error.message}`;
             setErrorMessage(msg);
@@ -104,7 +98,7 @@ export default function ListenerLoginPage() {
         <CardContent className="grid gap-4">
           {errorMessage && (
             <div className="p-3 bg-destructive/10 border border-destructive/50 text-destructive text-sm rounded-md">
-              <p className='font-bold'>Login Failed</p>
+              <p className='font-bold'>Configuration Error</p>
               <p>{errorMessage}</p>
             </div>
           )}
