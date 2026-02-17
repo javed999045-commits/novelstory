@@ -4,22 +4,15 @@
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { CreditCard, Landmark, Wallet, Coins, ArrowLeft } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { Coins, ArrowLeft } from "lucide-react";
 import Link from "next/link";
+import { Input } from "@/components/ui/input";
 
 const coinPacks = [
-  { name: "Mini", price: 20, coins: 20, bonus: 0, popular: false },
-  { name: "Starter", price: 50, coins: 50, bonus: 0, popular: false },
-  { name: "Popular", price: 100, coins: 100, bonus: 0, popular: true },
-  { name: "Premium", price: 500, coins: 550, bonus: 50, popular: false },
-];
-
-const paymentOptions = [
-  { name: "UPI", icon: Landmark },
-  { name: "Card", icon: CreditCard },
-  { name: "NetBanking", icon: Landmark },
-  { name: "Wallet", icon: Wallet },
+  { id: 'mini', name: "Mini Pack", price: 20, coins: 20, description: "Save 0%" },
+  { id: 'starter', name: "Starter Pack", price: 50, coins: 50, description: "Save 0%" },
+  { id: 'popular', name: "Popular Pack", price: 100, coins: 100, description: "Most bought", popular: true },
+  { id: 'premium', name: "Premium Pack", price: 500, coins: 550, description: "Get 50 Bonus!", bonus: 50 },
 ];
 
 export default function RechargePage() {
@@ -36,64 +29,45 @@ export default function RechargePage() {
           <h1 className="text-2xl font-bold font-headline">Buy Coins</h1>
         </div>
       </header>
-      <main className="container mx-auto p-4 md:p-6">
+      <main className="container mx-auto p-4 md:p-6 max-w-2xl">
         <Card className="bg-card text-card-foreground">
           <CardHeader>
-            <CardTitle>Recharge Wallet</CardTitle>
-            <CardDescription>Select a pack to add coins.</CardDescription>
+            <CardTitle>Your Balance: 45 coins</CardTitle>
+            <CardDescription>Select a pack to add coins to your wallet.</CardDescription>
           </CardHeader>
-          <CardContent className="space-y-8">
-            <div className="grid grid-cols-2 gap-4">
-              {coinPacks.map((pack) => (
-                <div
-                  key={pack.name}
-                  className={cn(
-                    "relative flex flex-col items-center justify-between p-4 text-center cursor-pointer transition-all rounded-lg border-2 h-full",
-                    pack.popular
-                      ? "border-primary bg-primary/10"
-                      : "border-border hover:border-primary/50 bg-card"
-                  )}
-                >
-                   {pack.popular && (
-                    <div className="absolute -top-3 bg-primary text-primary-foreground px-3 py-0.5 rounded-full text-xs font-bold tracking-wider">
-                      POPULAR
+          <CardContent className="space-y-4">
+            {coinPacks.map((pack) => (
+              <Card key={pack.id} className={pack.popular ? "border-primary bg-primary/10" : "bg-secondary/50"}>
+                {pack.popular && <div className="bg-primary text-primary-foreground text-xs font-bold text-center p-1 rounded-t-lg">MOST POPULAR</div>}
+                <CardContent className="p-4 flex items-center justify-between">
+                  <div className="flex items-center gap-4">
+                    <Coins className="h-8 w-8 text-primary" />
+                    <div>
+                      <p className="font-bold">{pack.name}</p>
+                      <p className="text-sm">₹{pack.price} = {pack.coins} Coins</p>
+                      <p className="text-xs text-muted-foreground">{pack.bonus ? `(Get ${pack.bonus} Bonus!)` : pack.description}</p>
                     </div>
-                  )}
-                  <div>
-                    <p className="text-lg font-bold">{pack.name}</p>
-                    <div className="flex items-center gap-2 my-2 justify-center">
-                      <Coins className="h-6 w-6 text-primary"/>
-                      <p className="text-3xl font-bold text-primary">{pack.coins}</p>
-                    </div>
-                    <p className="text-sm text-muted-foreground">Coins</p>
-                    {pack.bonus > 0 && (
-                      <p className="text-xs text-emerald-500 font-bold">+ {pack.bonus} Bonus</p>
-                    )}
                   </div>
-                   <div className="mt-4 w-full">
-                     <Button variant={pack.popular ? "default": "outline"} className="w-full font-bold">
-                       ₹{pack.price}
-                     </Button>
-                   </div>
-                </div>
-              ))}
-            </div>
-
-            <div className="space-y-4">
-              <h3 className="text-lg font-semibold text-center">Payment Options</h3>
-              <div className="flex justify-center items-center gap-6 text-center">
-                {paymentOptions.map((option) => (
-                  <div key={option.name} className="flex flex-col items-center gap-2 text-muted-foreground p-2 rounded-md hover:bg-secondary/50 transition-colors">
-                    <option.icon className="h-8 w-8" />
-                    <span className="text-xs font-medium">{option.name}</span>
+                  <Button asChild>
+                    <Link href={`/recharge/payment?pack=${pack.id}&price=${pack.price}&coins=${pack.coins + (pack.bonus || 0)}`}>
+                      Select
+                    </Link>
+                  </Button>
+                </CardContent>
+              </Card>
+            ))}
+             <Card className="bg-secondary/50">
+                <CardHeader>
+                    <CardTitle className="text-base">Custom Amount</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="flex items-center gap-2">
+                    <Input type="number" placeholder="Min ₹20" className="w-1/2" />
+                    <span className="text-muted-foreground">= [__] Coins</span>
                   </div>
-                ))}
-              </div>
-            </div>
-            
-            <Button size="lg" className="w-full bg-primary hover:bg-primary/90 text-primary-foreground font-bold text-lg">
-              Proceed to Pay
-            </Button>
+                   <Button className="w-full mt-4" disabled>Continue</Button>
+                </CardContent>
+              </Card>
           </CardContent>
         </Card>
       </main>
