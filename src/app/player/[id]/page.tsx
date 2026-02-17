@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -6,7 +7,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 
 import { useToast } from '@/hooks/use-toast';
-import { PlaceHolderImages } from '@/lib/placeholder-images';
+import { novels as novelsData, type Episode, type Novel } from '@/lib/novels';
 
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
@@ -49,8 +50,20 @@ export default function PlayerPage() {
   const [progress, setProgress] = useState(15);
   const [playbackSpeed, setPlaybackSpeed] = useState(1);
 
-  const storyId = params.id as string;
-  const story = PlaceHolderImages.find((img) => img.id === storyId);
+  const episodeId = params.id as string;
+  
+  let episode: Episode | undefined;
+  let novel: Novel | undefined;
+
+  for (const n of novelsData) {
+    const foundEpisode = n.episodes.find(e => e.id === episodeId);
+    if (foundEpisode) {
+      episode = foundEpisode;
+      novel = n;
+      break;
+    }
+  }
+
 
   useEffect(() => {
     document.body.classList.add('prevent-screenshot');
@@ -109,13 +122,13 @@ export default function PlayerPage() {
     });
   };
 
-  if (!story) {
+  if (!episode || !novel) {
     return (
       <div className="flex flex-col items-center justify-center min-h-screen bg-background text-foreground">
         <AlertTriangle className="w-12 h-12 text-destructive mb-4" />
-        <h2 className="text-2xl font-bold mb-2">Story not found</h2>
+        <h2 className="text-2xl font-bold mb-2">Episode not found</h2>
         <p className="text-muted-foreground mb-4">
-          The audio story you are looking for does not exist.
+          The audio episode you are looking for does not exist.
         </p>
         <Button asChild>
           <Link href="/home">Go Back Home</Link>
@@ -133,7 +146,7 @@ export default function PlayerPage() {
             <span className="sr-only">Back</span>
           </Button>
           <h1 className="text-xl font-bold font-headline truncate">
-            {story.title}
+            {episode.title}
           </h1>
         </div>
       </header>
@@ -143,27 +156,28 @@ export default function PlayerPage() {
           <CardContent className="p-6 pt-6 space-y-6">
             <div className="aspect-square relative w-full max-w-sm mx-auto overflow-hidden rounded-lg shadow-lg">
               <Image
-                src={story.imageUrl}
-                alt={story.description}
+                src={novel.coverImageUrl}
+                alt={novel.title}
                 fill
                 className="object-cover"
-                data-ai-hint={story.imageHint}
+                data-ai-hint={novel.imageHint}
               />
             </div>
 
             <div className="text-center">
-              <h2 className="text-2xl font-bold font-headline">{story.title}</h2>
-              <p className="text-muted-foreground">By {story.author}</p>
+              <h2 className="text-2xl font-bold font-headline">{episode.title}</h2>
+              <p className="text-muted-foreground">From: {novel.title}</p>
+              <p className="text-muted-foreground">By {novel.author}</p>
             </div>
 
             <div className="space-y-2">
               <Progress value={progress} />
               <div className="flex justify-between text-xs text-muted-foreground">
                 <span>
-                  {Math.floor((progress * 0.6 * (60 * (parseInt(story.duration) / 100))) / 60)}:
-                  {Math.round((progress * 0.6 * (60 * (parseInt(story.duration) / 100))) % 60).toString().padStart(2, '0')}
+                  {Math.floor((progress * 0.6 * (60 * (parseInt(episode.duration) / 100))) / 60)}:
+                  {Math.round((progress * 0.6 * (60 * (parseInt(episode.duration) / 100))) % 60).toString().padStart(2, '0')}
                 </span>
-                <span>{story.duration}</span>
+                <span>{episode.duration}</span>
               </div>
             </div>
 

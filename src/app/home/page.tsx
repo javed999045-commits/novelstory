@@ -6,137 +6,96 @@ import Image from 'next/image';
 import Link from 'next/link';
 import {
   Coins,
-  Lock,
-  PlayCircle,
+  Heart,
+  BookOpen,
   Star,
-  Sparkles,
-  PenSquare,
+  Users,
   Bell,
   Search,
   PlusCircle,
-  TrendingUp,
-  Zap,
   User,
+  Book,
+  Mic,
 } from 'lucide-react';
 
 import { Logo } from '@/components/icons/Logo';
-import { PlaceHolderImages, type ImagePlaceholder } from '@/lib/placeholder-images';
+import { novels as novelsData, type Novel } from '@/lib/novels';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
 import { useToast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
+import { Badge } from '@/components/ui/badge';
 
+function NovelCard({ novel }: { novel: Novel }) {
+    const { toast } = useToast();
 
-const categories = ['All', 'Stories', 'Podcasts', 'Horror', 'Romance', 'Sci-Fi', 'Comedy'];
+    const handleWishlist = () => {
+        toast({
+            title: "Added to Wishlist!",
+            description: `"${novel.title}" has been added to your wishlist.`,
+        });
+    };
 
-function StoryCard({ story, onUnlock }: { story: ImagePlaceholder, onUnlock: (id: string) => void }) {
   return (
-    <Card
-      className={cn(
-        'bg-card text-card-foreground overflow-hidden transition-all hover:shadow-lg hover:border-primary/50 w-full flex flex-col',
-        story.isBundle && 'sm:col-span-2 lg:col-span-2'
-      )}
-    >
-      <CardContent className="p-0 flex flex-col flex-grow">
-        <Link href={`/episode/${story.id}`} className="block">
-          <div className="relative aspect-[16/9]">
-            <Image
-              src={story.imageUrl}
-              alt={story.description}
-              fill
-              className="object-cover"
-              data-ai-hint={story.imageHint}
-            />
-            {story.priceInCoins > 0 && !story.unlocked && !story.isBundle && (
-              <div className="absolute top-2 left-2 bg-black/50 backdrop-blur-sm text-white text-xs font-bold px-2 py-1 rounded-full flex items-center gap-1">
-                  <Coins className="w-3 h-3 text-yellow-400" />
-                  {story.priceInCoins}
+    <Card className="bg-card text-card-foreground overflow-hidden transition-all hover:shadow-lg w-full">
+      <CardContent className="p-4">
+        <div className="flex flex-col sm:flex-row gap-4">
+          <Link href={`/novels/${novel.id}`} className="block sm:w-1/3 flex-shrink-0">
+            <div className="relative aspect-[3/4]">
+              <Image
+                src={novel.coverImageUrl}
+                alt={novel.title}
+                fill
+                className="object-cover rounded-md"
+                data-ai-hint={novel.imageHint}
+              />
+            </div>
+          </Link>
+          <div className="flex flex-col justify-between sm:w-2/3">
+            <div className='space-y-2'>
+              <Link href={`/novels/${novel.id}`}>
+                <h3 className="font-bold font-headline text-xl leading-tight hover:underline flex items-center gap-2">
+                    <Book className="w-5 h-5 text-primary" /> {novel.title}
+                </h3>
+              </Link>
+              <p className="text-sm text-muted-foreground">
+                By: {novel.author}
+              </p>
+              <div className="flex items-center gap-2 text-sm">
+                <Star className="w-4 h-4 text-yellow-400" />
+                <span>{novel.rating} ({novel.ratingsCount / 1000}K ratings)</span>
               </div>
-            )}
-            {story.isBundle && (
-              <div className="absolute top-2 right-2 bg-primary text-primary-foreground text-xs font-bold px-2 py-1 rounded-full flex items-center gap-1">
-                <Star className="w-3 h-3" />
-                BUNDLE
+               <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                <Mic className="w-4 h-4" />
+                <span>{novel.episodesCount} Episodes</span>
               </div>
-            )}
-          </div>
-        </Link>
-        <div className="p-4 space-y-3 flex-grow flex flex-col justify-between">
-          <div>
-            <Link href={`/episode/${story.id}`} className="block">
-              <h3 className="font-bold font-headline text-lg truncate hover:underline">
-                {story.title}
-              </h3>
-            </Link>
-            <p className="text-sm text-muted-foreground">
-              By {story.author} &bull; {story.duration}
-            </p>
-          </div>
-
-          <div className="pt-2">
-            {story.unlocked ? (
+              <p className="text-sm font-semibold text-primary/90 flex items-center gap-2">
+                 <Coins className="w-4 h-4 text-yellow-400" /> {novel.tagline}
+              </p>
+               {novel.badge && <Badge variant="secondary">{novel.badge}</Badge>}
+            </div>
+            <div className="flex items-stretch gap-2 mt-4">
               <Button asChild className="w-full font-bold">
-                <Link href={`/player/${story.id}`}>
-                  <PlayCircle className="mr-2" />
-                  {story.priceInCoins === 0 ? 'Listen for Free' : 'Play'}
+                <Link href={`/novels/${novel.id}/episodes`}>
+                  <BookOpen className="mr-2" /> View Episodes
                 </Link>
               </Button>
-            ) : (
-              <Button
-                  onClick={() => onUnlock(story.id)}
-                  className="w-full font-bold"
-                >
-                  <Lock className="mr-2" />
-                  Unlock
-                </Button>
-            )}
+              <Button variant="outline" size="icon" onClick={handleWishlist}>
+                <Heart />
+              </Button>
+            </div>
           </div>
         </div>
       </CardContent>
     </Card>
-  )
+  );
 }
 
 
 export default function HomePage() {
-  const [stories, setStories] = useState<ImagePlaceholder[]>(PlaceHolderImages);
+  const [novels, setNovels] = useState<Novel[]>(novelsData);
   const [coinBalance, setCoinBalance] = useState(150);
-  const { toast } = useToast();
-  const [activeCategory, setActiveCategory] = useState('All');
-
-  const handleUnlock = (storyId: string) => {
-    const storyToUnlock = stories.find((s) => s.id === storyId);
-    if (!storyToUnlock) return;
-
-    if (coinBalance >= storyToUnlock.priceInCoins) {
-      setCoinBalance((prev) => prev - storyToUnlock.priceInCoins);
-      setStories((prevStories) =>
-        prevStories.map((s) =>
-          s.id === storyId ? { ...s, unlocked: true } : s
-        )
-      );
-      toast({
-        title: 'Story Unlocked!',
-        description: `You can now listen to "${storyToUnlock.title}".`,
-      });
-    } else {
-      toast({
-        variant: 'destructive',
-        title: 'Insufficient Coins',
-        description: 'You need more coins to unlock this story.',
-        action: (
-          <Button asChild variant="secondary" size="sm">
-            <Link href="/recharge">Buy Coins</Link>
-          </Button>
-        ),
-      });
-    }
-  };
-  
-  const freeEpisode = stories.find((s) => s.priceInCoins === 0);
-  const trendingStories = stories.filter(s => ['horror-story-1', 'thriller-bundle-1'].includes(s.id));
-  const newReleases = stories.filter(s => !['horror-story-1', 'thriller-bundle-1'].includes(s.id) && s.id !== freeEpisode?.id);
 
   return (
     <div className="min-h-screen bg-background text-foreground">
@@ -165,11 +124,6 @@ export default function HomePage() {
                     <Bell className="h-5 w-5" />
                 </Button>
                 <Separator orientation="vertical" className="h-6 mx-1 md:mx-2" />
-                <Button asChild variant="ghost" size="icon" title="Creator Dashboard">
-                  <Link href="/creator/dashboard">
-                    <PenSquare className="h-5 w-5" />
-                  </Link>
-                </Button>
                 <Button asChild variant="ghost" size="icon" title="My Library">
                   <Link href="/library">
                     <User className="h-5 w-5" />
@@ -180,87 +134,13 @@ export default function HomePage() {
       </header>
 
       <main className="container mx-auto p-4 md:p-6 space-y-8">
-        <div className="overflow-x-auto">
-            <div className="flex space-x-2 pb-2">
-                {categories.map((category) => (
-                <Button 
-                    key={category} 
-                    variant={activeCategory === category ? 'default' : 'outline'} 
-                    size="sm" 
-                    className="rounded-full flex-shrink-0"
-                    onClick={() => setActiveCategory(category)}
-                >
-                    {category}
-                </Button>
+        <div>
+            <h1 className="text-2xl font-bold mb-4">Featured Novels</h1>
+            <div className="space-y-6">
+                {novels.map((novel) => (
+                    <NovelCard key={novel.id} novel={novel} />
                 ))}
             </div>
-        </div>
-
-        {freeEpisode && (
-          <div>
-            <h2 className="text-xl font-bold mb-4 flex items-center gap-2">
-              <Sparkles className="text-primary" />
-              Free Episode of the Day
-            </h2>
-             <Card className="bg-card text-card-foreground overflow-hidden transition-all hover:shadow-lg hover:border-primary/50">
-                <CardContent className="p-0 md:flex md:items-center">
-                    <Link href={`/episode/${freeEpisode.id}`} className="block md:w-1/3 md:flex-shrink-0">
-                      <div className="relative aspect-[16/9] md:aspect-square">
-                          <Image
-                          src={freeEpisode.imageUrl}
-                          alt={freeEpisode.description}
-                          fill
-                          className="object-cover"
-                          data-ai-hint={freeEpisode.imageHint}
-                          />
-                      </div>
-                    </Link>
-                    <div className="p-4 md:p-6 space-y-3 flex-grow">
-                      <Link href={`/episode/${freeEpisode.id}`}>
-                        <h3 className="font-bold font-headline text-xl md:text-2xl hover:underline">
-                          {freeEpisode.title}
-                        </h3>
-                      </Link>
-                        <p className="text-sm text-muted-foreground">
-                        By {freeEpisode.author} &bull; {freeEpisode.duration}
-                        </p>
-                        <p className="text-sm text-foreground/80 hidden md:block">
-                            {freeEpisode.description}
-                        </p>
-                        <Button asChild className="w-full md:w-auto font-bold" size="lg">
-                            <Link href={`/player/${freeEpisode.id}`}>
-                                <PlayCircle className="mr-2" />
-                                Listen for Free
-                            </Link>
-                        </Button>
-                    </div>
-                </CardContent>
-             </Card>
-          </div>
-        )}
-        
-        <div>
-          <h2 className="text-xl font-bold mb-4 flex items-center gap-2">
-            <TrendingUp className="text-primary" />
-            Trending Now
-          </h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-            {trendingStories.map((story) => (
-              <StoryCard key={story.id} story={story} onUnlock={handleUnlock} />
-            ))}
-          </div>
-        </div>
-
-        <div>
-          <h2 className="text-xl font-bold mb-4 flex items-center gap-2">
-            <Zap className="text-primary" />
-            New Releases
-          </h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-            {newReleases.map((story) => (
-              <StoryCard key={story.id} story={story} onUnlock={handleUnlock} />
-            ))}
-          </div>
         </div>
       </main>
     </div>

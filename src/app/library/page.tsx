@@ -14,72 +14,68 @@ import {
   History,
   PlayCircle,
   Settings,
+  BookCheck,
+  BookX,
 } from 'lucide-react';
 
-import { PlaceHolderImages, type ImagePlaceholder } from '@/lib/placeholder-images';
+import { novels as novelsData, type Novel } from '@/lib/novels';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Progress } from '@/components/ui/progress';
+import { Card, CardContent } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Badge } from '@/components/ui/badge';
 
-function LibraryStoryCard({ story }: { story: ImagePlaceholder }) {
-    return (
-      <Link href={`/episode/${story.id}`} className="block group">
-        <div className="space-y-2">
-            <div className="relative aspect-[1/1] overflow-hidden rounded-lg">
-                <Image
-                    src={story.imageUrl}
-                    alt={story.description}
-                    fill
-                    className="object-cover transition-transform group-hover:scale-105"
-                    data-ai-hint={story.imageHint}
-                />
-            </div>
-            <div className="space-y-1">
-                <h3 className="font-bold font-headline text-sm truncate">{story.title}</h3>
-                <p className="text-xs text-muted-foreground">{story.author}</p>
-            </div>
-        </div>
-      </Link>
-    );
-  }
 
-  function ListItemCard({ story }: { story: ImagePlaceholder }) {
+function UnlockedNovelCard({ novel }: { novel: Novel }) {
+    const unlockedEpisodes = novel.episodes.filter(e => e.unlocked);
+    const totalSpentOnNovel = unlockedEpisodes.reduce((sum, ep) => sum + ep.priceInCoins, 0);
+  
     return (
-      <Link href={`/player/${story.id}`} className="block group">
-        <Card className="bg-secondary/50 text-card-foreground overflow-hidden transition-all group-hover:shadow-md group-hover:border-primary/50 w-full flex items-center p-3 gap-4">
-            <div className="relative aspect-square w-16 h-16 flex-shrink-0">
-                <Image
-                    src={story.imageUrl}
-                    alt={story.description}
-                    fill
-                    className="object-cover rounded-md"
-                    data-ai-hint={story.imageHint}
-                />
+      <Card className="bg-card text-card-foreground">
+        <CardContent className="p-4">
+          <div className="space-y-4">
+            <div>
+              <h3 className="text-lg font-bold font-headline">{novel.title}</h3>
+              <p className="text-sm text-muted-foreground">
+                Unlocked: {unlockedEpisodes.length}/{novel.episodesCount} episodes
+              </p>
+              <p className="text-sm text-muted-foreground">
+                Total spent: {totalSpentOnNovel} coins
+              </p>
             </div>
-            <div className="flex-grow space-y-1 overflow-hidden">
-                <h3 className="font-bold font-headline text-base truncate">{story.title}</h3>
-                <p className="text-sm text-muted-foreground">By {story.author}</p>
-                <p className="text-xs text-muted-foreground">{story.duration}</p>
+            <div className="space-y-2">
+              {unlockedEpisodes.slice(0, 2).map(episode => (
+                <Link key={episode.id} href={`/player/${episode.id}`} className="block">
+                    <div className="flex items-center gap-2 text-sm p-2 rounded-md hover:bg-secondary/50">
+                        {episode.progress && episode.progress < 100 ? <BookCheck className="w-4 h-4 text-primary" /> : <BookX className="w-4 h-4 text-muted-foreground" /> }
+                        <span className="truncate flex-grow">{episode.episodeNumber}. {episode.title}</span>
+                        <Badge variant="outline" className='flex-shrink-0'>
+                            {episode.progress ? `${100 - episode.progress}% left` : (episode.isFree ? 'FREE' : 'UNLOCKED')}
+                        </Badge>
+                    </div>
+                </Link>
+              ))}
+               {unlockedEpisodes.length > 2 && (
+                <p className="text-xs text-muted-foreground px-2">...and {unlockedEpisodes.length - 2} more</p>
+               )}
             </div>
-             <PlayCircle className="w-8 h-8 text-primary flex-shrink-0 opacity-0 transition-opacity group-hover:opacity-100" />
-        </Card>
-      </Link>
+            <Button asChild variant="outline" size="sm" className="w-full">
+              <Link href={`/novels/${novel.id}/episodes`}>View All Episodes</Link>
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
     );
   }
 
 
 export default function LibraryPage() {
   const router = useRouter();
-  const [stories, setStories] = useState<ImagePlaceholder[]>(PlaceHolderImages);
+  const [novels, setNovels] = useState<Novel[]>(novelsData);
 
-  const unlockedStories = stories.filter(s => s.unlocked);
-  const downloadedStories = stories.filter(s => s.isDownloaded);
-  const historyStories = stories.filter(s => s.id === 'horror-story-1' || s.id === 'comedy-special-1');
-
-  const totalSpent = unlockedStories.reduce((sum, story) => sum + (story.priceInCoins || 0), 0);
+  const unlockedNovels = novels.filter(n => n.episodes.some(e => e.unlocked));
+  const totalSpent = novels.flatMap(n => n.episodes).filter(e => e.unlocked).reduce((sum, e) => sum + e.priceInCoins, 0);
+  const totalUnlockedEpisodes = novels.flatMap(n => n.episodes).filter(e => e.unlocked).length;
 
   return (
     <div className="min-h-screen bg-background text-foreground">
@@ -124,7 +120,7 @@ export default function LibraryPage() {
                 </div>
                 <div>
                     <p className="text-sm text-muted-foreground">Episodes Unlocked</p>
-                    <p className="text-lg font-bold">{unlockedStories.length}</p>
+                    <p className="text-lg font-bold">{totalUnlockedEpisodes}</p>
                 </div>
             </CardContent>
              <Separator />
@@ -136,43 +132,12 @@ export default function LibraryPage() {
              </Link>
         </Card>
 
-        <Tabs defaultValue="library" className="w-full">
-          <TabsList className="grid w-full grid-cols-3">
-            <TabsTrigger value="library"><BookUser className="mr-2"/>Unlocked</TabsTrigger>
-            <TabsTrigger value="downloads"><DownloadCloud className="mr-2"/>Downloads</TabsTrigger>
-            <TabsTrigger value="history"><History className="mr-2"/>History</TabsTrigger>
-          </TabsList>
-          <TabsContent value="library" className="mt-6">
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
-                {unlockedStories.map(story => (
-                    <LibraryStoryCard key={story.id} story={story} />
-                ))}
-            </div>
-          </TabsContent>
-          <TabsContent value="downloads" className="mt-6 space-y-4">
-             <Card className="bg-card text-card-foreground">
-                <CardHeader>
-                    <CardTitle className="text-base">Storage Usage</CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-2">
-                    <Progress value={25} />
-                    <p className="text-xs text-muted-foreground">Using 2.5GB of 10GB</p>
-                </CardContent>
-             </Card>
-             <div className="space-y-3">
-                {downloadedStories.map(story => (
-                    <ListItemCard key={story.id} story={story} />
-                ))}
-             </div>
-          </TabsContent>
-          <TabsContent value="history" className="mt-6">
-            <div className="space-y-3">
-                {historyStories.map(story => (
-                    <ListItemCard key={story.id} story={story} />
-                ))}
-             </div>
-          </TabsContent>
-        </Tabs>
+        <div className="space-y-4">
+            <h2 className='text-xl font-bold'>Unlocked Novels</h2>
+            {unlockedNovels.map(novel => (
+                <UnlockedNovelCard key={novel.id} novel={novel} />
+            ))}
+        </div>
       </main>
     </div>
   );

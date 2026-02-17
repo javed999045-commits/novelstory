@@ -1,0 +1,135 @@
+{
+  "novels": [
+    {
+      "id": "dark-horror-stories",
+      "title": "Dark Horror Stories",
+      "author": "Vikram Singh",
+      "coverImageUrl": "https://images.unsplash.com/photo-1502932346948-26503864144b?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxzcG9va3klMjBmb3Jlc3R8ZW58MHx8fHwxNzczMzA3MTU4fDA&ixlib=rb-4.0.3&q=80&w=1080",
+      "imageHint": "spooky forest",
+      "rating": 4.8,
+      "ratingsCount": 12000,
+      "episodesCount": 24,
+      "tagline": "Episodes start from 5 coins",
+      "badge": "Complete: 85% listeners",
+      "description": "India's most terrifying horror stories. Every episode brings a new fear, a new mystery. Be prepared to face the darkness that lurks in the corners of your mind. These tales are not for the faint of heart.",
+      "genres": ["Horror", "Thriller", "Supernatural"],
+      "language": "Hindi",
+      "releaseDate": "Jan 2024",
+      "totalDuration": "8 hours 25 minutes",
+      "priceRange": "5 - 25 coins per episode",
+      "listenerStats": {
+        "completionPercentage": 78,
+        "mostPopularEpisode": "Episode 7",
+        "averageRating": 4.8
+      },
+      "reviews": [
+        { "text": "Episode 3 was terrifying..." },
+        { "text": "Every episode is a different level of horror." }
+      ],
+      "episodes": [
+        {
+          "id": "dhs-ep-1",
+          "episodeNumber": 1,
+          "title": "The Beginning",
+          "duration": "12 min",
+          "listens": 45000,
+          "rating": 4.9,
+          "reviews": 2000,
+          "isFree": true,
+          "priceInCoins": 0,
+          "unlocked": true
+        },
+        {
+          "id": "dhs-ep-2",
+          "episodeNumber": 2,
+          "title": "The Dark Room",
+          "duration": "18 min",
+          "listens": 32000,
+          "rating": 4.8,
+          "reviews": 1500,
+          "isFree": false,
+          "priceInCoins": 8,
+          "unlocked": false
+        },
+        {
+          "id": "dhs-ep-3",
+          "episodeNumber": 3,
+          "title": "Whispering Walls",
+          "duration": "22 min",
+          "listens": 28000,
+          "rating": 4.9,
+          "reviews": 2100,
+          "isFree": false,
+          "priceInCoins": 12,
+          "unlocked": false,
+          "progress": 65
+        },
+        {
+          "id": "dhs-ep-4",
+          "episodeNumber": 4,
+          "title": "The Mirror",
+          "duration": "25 min",
+          "listens": 25000,
+          "rating": 4.7,
+          "reviews": 1800,
+          "isFree": false,
+          "priceInCoins": 15,
+          "unlocked": false
+        }
+      ]
+    },
+    {
+      "id": "love-stories-vol-1",
+      "title": "Love Stories - Vol 1",
+      "author": "Priya Kapoor",
+      "coverImageUrl": "https://images.unsplash.com/photo-1502421323963-480985204221?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxyb21hbnRpYyUyMGNvdXBsZXxlbnwwfHx8fDE3NzM3MjU0OTB8MA&ixlib=rb-4.0.3&q=80&w=1080",
+      "imageHint": "romantic couple",
+      "rating": 4.9,
+      "ratingsCount": 8000,
+      "episodesCount": 12,
+      "tagline": "Episodes start from 8 coins",
+      "badge": "NEW - This week",
+      "description": "A collection of heartwarming love stories that explore the different facets of love, from first crushes to lifelong commitments. Each episode is a journey into the heart.",
+      "genres": ["Romance", "Drama"],
+      "language": "Hindi",
+      "releaseDate": "Mar 2024",
+      "totalDuration": "4 hours 10 minutes",
+      "priceRange": "8 - 20 coins per episode",
+      "listenerStats": {
+        "completionPercentage": 65,
+        "mostPopularEpisode": "Episode 2",
+        "averageRating": 4.9
+      },
+      "reviews": [
+        { "text": "So beautiful and touching." },
+        { "text": "Made me cry happy tears." }
+      ],
+      "episodes": [
+        {
+          "id": "ls-ep-1",
+          "episodeNumber": 1,
+          "title": "First Sight",
+          "duration": "15 min",
+          "listens": 30000,
+          "rating": 4.8,
+          "reviews": 1800,
+          "isFree": true,
+          "priceInCoins": 0,
+          "unlocked": true
+        },
+        {
+          "id": "ls-ep-2",
+          "episodeNumber": 2,
+          "title": "The First Date",
+          "duration": "20 min",
+          "listens": 25000,
+          "rating": 4.9,
+          "reviews": 2200,
+          "isFree": false,
+          "priceInCoins": 10,
+          "unlocked": true
+        }
+      ]
+    }
+  ]
+}
