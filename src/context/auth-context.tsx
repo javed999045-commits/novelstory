@@ -27,7 +27,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [loading, setLoading] = useState(true);
   const { toast } = useToast();
 
-  const masterKey = 'r5h6f3jnngy';
+  const masterKey = process.env.NEXT_PUBLIC_CREATOR_MASTER_KEY || 'r5h6f3jnngy';
 
   const validateKey = useCallback((key: string): { valid: boolean; role: Role; message?: string } => {
     if (key === masterKey) {
@@ -57,7 +57,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         return { success: false, message: 'Firebase not configured.' };
     }
 
-    const validation = validateKey(key);
+    const validation = validateKey(key.trim());
 
     if (validation.valid) {
         try {
