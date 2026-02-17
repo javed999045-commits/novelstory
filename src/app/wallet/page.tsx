@@ -1,5 +1,7 @@
+
 "use client";
 
+import { useRouter } from 'next/navigation';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
@@ -32,15 +34,15 @@ const transactionHistory = [
 ];
 
 export default function WalletPage() {
+  const router = useRouter();
+
   return (
     <div className="min-h-screen bg-background text-foreground">
       <header className="sticky top-0 z-10 bg-background/80 backdrop-blur-sm border-b border-border p-4">
         <div className="container mx-auto flex items-center gap-4">
-          <Button asChild variant="ghost" size="icon">
-            <Link href="/home">
-              <ArrowLeft />
-              <span className="sr-only">Back to Home</span>
-            </Link>
+          <Button variant="ghost" size="icon" onClick={() => router.back()}>
+            <ArrowLeft />
+            <span className="sr-only">Back</span>
           </Button>
           <h1 className="text-2xl font-bold font-headline">Wallet</h1>
         </div>

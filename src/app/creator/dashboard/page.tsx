@@ -5,6 +5,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 
 import { Button } from '@/components/ui/button';
 import {
@@ -51,6 +52,7 @@ const formSchema = z.object({
 
 export default function CreatorDashboardPage() {
   const { toast } = useToast();
+  const router = useRouter();
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -78,11 +80,9 @@ export default function CreatorDashboardPage() {
     <div className="min-h-screen bg-background text-foreground">
       <header className="sticky top-0 z-10 bg-background/80 backdrop-blur-sm border-b border-border p-4">
         <div className="container mx-auto flex items-center gap-4">
-          <Button asChild variant="ghost" size="icon">
-            <Link href="/home">
-              <ArrowLeft />
-              <span className="sr-only">Back to Home</span>
-            </Link>
+          <Button variant="ghost" size="icon" onClick={() => router.back()}>
+            <ArrowLeft />
+            <span className="sr-only">Back</span>
           </Button>
           <h1 className="text-2xl font-bold font-headline">Creator Dashboard</h1>
         </div>

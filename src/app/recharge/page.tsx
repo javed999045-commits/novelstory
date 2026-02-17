@@ -1,5 +1,7 @@
+
 "use client";
 
+import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { CreditCard, Landmark, Wallet, Coins, ArrowLeft } from "lucide-react";
@@ -21,15 +23,15 @@ const paymentOptions = [
 ];
 
 export default function RechargePage() {
+  const router = useRouter();
+
   return (
     <div className="min-h-screen bg-background text-foreground">
       <header className="sticky top-0 z-10 bg-background/80 backdrop-blur-sm border-b border-border p-4">
         <div className="container mx-auto flex items-center gap-4">
-          <Button asChild variant="ghost" size="icon">
-            <Link href="/wallet">
-              <ArrowLeft />
-              <span className="sr-only">Back to Wallet</span>
-            </Link>
+          <Button variant="ghost" size="icon" onClick={() => router.back()}>
+            <ArrowLeft />
+            <span className="sr-only">Back</span>
           </Button>
           <h1 className="text-2xl font-bold font-headline">Buy Coins</h1>
         </div>

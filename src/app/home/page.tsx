@@ -16,6 +16,7 @@ import {
   PlusCircle,
   TrendingUp,
   Zap,
+  User,
 } from 'lucide-react';
 
 import { Logo } from '@/components/icons/Logo';
@@ -167,6 +168,11 @@ export default function HomePage() {
                 <Button asChild variant="ghost" size="icon" title="Creator Dashboard">
                   <Link href="/creator/dashboard">
                     <PenSquare className="h-5 w-5" />
+                  </Link>
+                </Button>
+                <Button asChild variant="ghost" size="icon" title="My Library">
+                  <Link href="/library">
+                    <User className="h-5 w-5" />
                   </Link>
                 </Button>
             </div>
