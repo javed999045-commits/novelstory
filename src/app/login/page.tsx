@@ -44,7 +44,7 @@ export default function LoginPage() {
             </div>
           </div>
           <Button asChild variant="link" className="text-accent font-bold">
-            <Link href="#">Explore as Guest</Link>
+            <Link href="/home">Explore as Guest</Link>
           </Button>
         </CardContent>
         <CardFooter className="text-center text-xs text-muted-foreground justify-center px-4">

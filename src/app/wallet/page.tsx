@@ -16,7 +16,7 @@ const transactionHistory = [
   },
   {
     id: 2,
-    description: "Unlocked Episode: Horror Story",
+    description: "Unlocked Episode: The Midnight Forest",
     date: "1 day ago",
     amount: "15",
     type: "spend",
@@ -37,9 +37,9 @@ export default function WalletPage() {
       <header className="sticky top-0 z-10 bg-background/80 backdrop-blur-sm border-b border-border p-4">
         <div className="container mx-auto flex items-center gap-4">
           <Button asChild variant="ghost" size="icon">
-            <Link href="/login">
+            <Link href="/home">
               <ArrowLeft />
-              <span className="sr-only">Back to Login</span>
+              <span className="sr-only">Back to Home</span>
             </Link>
           </Button>
           <h1 className="text-2xl font-bold font-headline">Wallet</h1>

@@ -89,7 +89,7 @@ export default function PlayerPage() {
           The audio story you are looking for does not exist.
         </p>
         <Button asChild>
-          <Link href="/wallet">Go Back</Link>
+          <Link href="/home">Go Back Home</Link>
         </Button>
       </div>
     );
@@ -104,7 +104,7 @@ export default function PlayerPage() {
             <span className="sr-only">Back</span>
           </Button>
           <h1 className="text-xl font-bold font-headline truncate">
-            Horror Story
+            {story.title}
           </h1>
         </div>
       </header>
@@ -123,8 +123,8 @@ export default function PlayerPage() {
             </div>
 
             <div className="text-center">
-              <h2 className="text-2xl font-bold font-headline">Horror Story</h2>
-              <p className="text-muted-foreground">By anonymous</p>
+              <h2 className="text-2xl font-bold font-headline">{story.title}</h2>
+              <p className="text-muted-foreground">By {story.author}</p>
             </div>
 
             <div className="space-y-2">
@@ -135,7 +135,7 @@ export default function PlayerPage() {
                   {Math.round(progress * 0.6) < 10 ? '0' : ''}
                   {Math.round(progress * 0.6)}
                 </span>
-                <span>1:00</span>
+                <span>{story.duration}</span>
               </div>
             </div>
 
