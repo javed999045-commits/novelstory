@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState } from 'react';
@@ -11,6 +12,7 @@ import {
   Star,
   Sparkles,
   ArrowRight,
+  PenSquare,
 } from 'lucide-react';
 
 import { PlaceHolderImages, type ImagePlaceholder } from '@/lib/placeholder-images';
@@ -61,13 +63,20 @@ export default function HomePage() {
           <h1 className="text-2xl font-bold font-headline text-primary">
             HearHere
           </h1>
-          <Button asChild variant="outline" className="border-primary/50">
-            <Link href="/wallet" className="flex items-center gap-2">
-              <Wallet className="h-5 w-5 text-primary" />
-              <span className="font-bold">{coinBalance}</span>
-              <Coins className="h-5 w-5 text-yellow-400" />
-            </Link>
-          </Button>
+          <div className="flex items-center gap-2">
+            <Button asChild variant="ghost" size="icon" title="Creator Dashboard">
+              <Link href="/creator/dashboard">
+                <PenSquare className="h-5 w-5" />
+              </Link>
+            </Button>
+            <Button asChild variant="outline" className="border-primary/50">
+              <Link href="/wallet" className="flex items-center gap-2">
+                <Wallet className="h-5 w-5 text-primary" />
+                <span className="font-bold">{coinBalance}</span>
+                <Coins className="h-5 w-5 text-yellow-400" />
+              </Link>
+            </Button>
+          </div>
         </div>
       </header>
 
