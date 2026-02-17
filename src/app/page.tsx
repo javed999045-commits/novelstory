@@ -17,7 +17,7 @@ export default function SplashPage() {
           : false;
 
       if (hasSeenOnboarding) {
-        router.replace("/home");
+        router.replace("/login");
       } else {
         router.replace("/onboarding");
       }
