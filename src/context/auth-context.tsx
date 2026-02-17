@@ -27,7 +27,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [loading, setLoading] = useState(true);
   const { toast } = useToast();
 
-  const masterKey = process.env.NEXT_PUBLIC_MASTER_KEY;
+  const masterKey = 'r5h6f3jnngy';
 
   const validateKey = useCallback((key: string): { valid: boolean; role: Role; message?: string } => {
     if (key === masterKey) {
