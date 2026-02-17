@@ -2,7 +2,7 @@
 'use client';
 
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import {
   SidebarProvider,
   Sidebar,
@@ -15,9 +15,11 @@ import {
   SidebarFooter,
   SidebarInset,
 } from '@/components/ui/sidebar';
-import { Crown, LayoutDashboard, BadgeCheck, Landmark, FileText, User, LogOut, Settings } from 'lucide-react';
+import { Crown, LayoutDashboard, BadgeCheck, Landmark, FileText, User, LogOut, Settings, KeySquare } from 'lucide-react';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
+import { useAuth } from '@/context/auth-context';
+import { useEffect } from 'react';
 
 export default function AdminLayout({
   children,
@@ -25,9 +27,27 @@ export default function AdminLayout({
   children: React.ReactNode;
 }) {
   const pathname = usePathname();
+  const router = useRouter();
+  const { user, role, loading } = useAuth();
+
+
+  useEffect(() => {
+    if (!loading && (role !== 'admin')) {
+      router.replace('/login');
+    }
+  }, [user, role, loading, router]);
+
+  if (loading || role !== 'admin') {
+      return (
+         <div className="flex items-center justify-center min-h-screen">
+            <p>Loading admin panel...</p>
+         </div>
+      )
+  }
 
   const menuItems = [
     { href: '/admin/dashboard', label: 'Dashboard', icon: LayoutDashboard },
+    { href: '/admin/keys', label: 'Manage Keys', icon: KeySquare },
     { href: '/admin/verify', label: 'Verify Payments', icon: BadgeCheck },
     { href: '/admin/reconciliation', label: 'Reconciliation', icon: Landmark },
     { href: '/admin/reports', label: 'Reports', icon: FileText },
@@ -65,12 +85,12 @@ export default function AdminLayout({
                 <SidebarMenuItem>
                     <SidebarMenuButton>
                         <User />
-                        <span>Admin User</span>
+                        <span>Creator</span>
                     </SidebarMenuButton>
                 </SidebarMenuItem>
                  <SidebarMenuItem>
                     <SidebarMenuButton asChild>
-                        <Link href="/admin/login">
+                        <Link href="/login">
                             <LogOut/>
                             <span>Logout</span>
                         </Link>
@@ -82,7 +102,7 @@ export default function AdminLayout({
       <SidebarInset>
         <header className="flex items-center justify-between p-4 border-b">
             <SidebarTrigger className="md:hidden"/>
-            <h1 className="text-xl font-bold">Welcome, Admin</h1>
+            <h1 className="text-xl font-bold">Welcome, Creator</h1>
         </header>
         <main className="p-4 md:p-6 bg-secondary/30 min-h-full">
             {children}

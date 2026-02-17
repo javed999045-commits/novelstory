@@ -2,7 +2,7 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
-import { ArrowLeft, ChevronRight, LogOut } from 'lucide-react';
+import { ArrowLeft, ChevronRight, LogOut, Copy } from 'lucide-react';
 import Link from 'next/link';
 
 import { Button } from '@/components/ui/button';
@@ -11,8 +11,6 @@ import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useAuth } from '@/context/auth-context';
-import { signOut } from 'firebase/auth';
-import { auth } from '@/lib/firebase';
 import { useToast } from '@/hooks/use-toast';
 import {
   AlertDialog,
@@ -29,22 +27,20 @@ import {
 
 export default function SettingsPage() {
     const router = useRouter();
-    const { user } = useAuth();
+    const { user, role, logout } = useAuth();
     const { toast } = useToast();
 
     const handleLogout = async () => {
-        if (!auth) {
-            toast({ variant: 'destructive', title: 'Firebase not configured.' });
-            return;
-        }
-        try {
-            await signOut(auth);
-            toast({ title: 'Logged out successfully.' });
-            router.push('/login');
-        } catch (error) {
-            toast({ variant: 'destructive', title: 'Logout failed.' });
-        }
+        await logout();
+        toast({ title: 'Logged out successfully.' });
+        router.push('/login');
     }
+    
+    const handleCopy = (text: string) => {
+        navigator.clipboard.writeText(text);
+        toast({ title: "Copied to clipboard!", description: text });
+    };
+
 
     if (!user) {
         return (
@@ -52,7 +48,7 @@ export default function SettingsPage() {
                 <Card className="text-center p-6">
                     <CardTitle>Please log in</CardTitle>
                     <CardDescription className="mt-2">You need to be logged in to view settings.</CardDescription>
-                    <Button asChild className="mt-4"><Link href="/listener/login">Login</Link></Button>
+                    <Button asChild className="mt-4"><Link href="/login">Login</Link></Button>
                 </Card>
             </div>
         )
@@ -73,16 +69,21 @@ export default function SettingsPage() {
             <main className="container mx-auto p-4 md:p-6 space-y-6 max-w-2xl">
                 <Card>
                     <CardHeader>
-                        <CardTitle>Profile Information</CardTitle>
+                        <CardTitle>Account Information</CardTitle>
                     </CardHeader>
                     <CardContent className="space-y-4">
                         <div className="flex items-center justify-between">
-                            <Label htmlFor="username">Username</Label>
-                            <span className="text-muted-foreground">{user.displayName ?? "Not set"}</span>
+                            <Label>Role</Label>
+                            <span className="text-muted-foreground capitalize">{role}</span>
                         </div>
                          <div className="flex items-center justify-between">
-                            <Label htmlFor="email">Email</Label>
-                            <span className="text-muted-foreground">{user.email}</span>
+                            <Label>User ID (UID)</Label>
+                            <div className="flex items-center gap-2">
+                                <span className="text-muted-foreground font-mono text-sm truncate max-w-[150px]">{user.uid}</span>
+                                <Button variant="ghost" size="icon" className="h-6 w-6" onClick={() => handleCopy(user.uid)}>
+                                    <Copy className="h-4 w-4" />
+                                </Button>
+                            </div>
                         </div>
                     </CardContent>
                 </Card>
@@ -92,10 +93,6 @@ export default function SettingsPage() {
                         <CardTitle>Security</CardTitle>
                     </CardHeader>
                     <CardContent className="space-y-4">
-                        <div className="flex items-center justify-between">
-                            <Label htmlFor="change-password">Change Password</Label>
-                            <Button variant="outline" size="sm" disabled>Change</Button>
-                        </div>
                          <div className="flex items-center justify-between">
                             <Label htmlFor="device-management">Device Management</Label>
                              <Button variant="ghost" size="icon">

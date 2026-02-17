@@ -1,8 +1,8 @@
 
 import { initializeApp, getApps, getApp, type FirebaseApp } from 'firebase/app';
-import { getAuth, isSignInWithEmailLink, signInWithEmailLink, type Auth } from 'firebase/auth';
+import { getAuth, type Auth } from 'firebase/auth';
 
-// IMPORTANT: Replace with your actual configuration from your Firebase project
+// IMPORTANT: These should be stored in .env.local for security
 const firebaseConfig = {
   apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
   authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN,
@@ -16,24 +16,14 @@ const firebaseConfig = {
 let app: FirebaseApp | null = null;
 let auth: Auth | null = null;
 
-// Only initialize on the client-side to prevent build errors.
+// Initialize Firebase only on the client-side
 if (typeof window !== 'undefined') {
-  if (firebaseConfig.apiKey && firebaseConfig.apiKey !== 'YOUR_API_KEY') {
+  // Check if all required config keys are present
+  if (firebaseConfig.apiKey && firebaseConfig.projectId) {
     app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
     auth = getAuth(app);
-    
-    // Handle email link sign-in on app load
-    if (isSignInWithEmailLink(auth, window.location.href)) {
-        let email = window.localStorage.getItem('emailForSignIn');
-        if (email) {
-            signInWithEmailLink(auth, email, window.location.href)
-                .catch((error) => {
-                    console.error("Failed to sign in with email link", error);
-                });
-        }
-    }
   } else {
-      console.warn("Firebase is not configured. Please add your Firebase credentials to the .env file. Auth features will be disabled.");
+      console.warn("Firebase is not fully configured. Please check your .env file. Some features may be disabled.");
   }
 }
 

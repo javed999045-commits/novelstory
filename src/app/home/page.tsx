@@ -21,9 +21,8 @@ import {
   Mic,
   Book,
   Wand2,
+  KeySquare,
 } from 'lucide-react';
-import { auth } from '@/lib/firebase';
-import { signOut } from 'firebase/auth';
 import { useRouter } from 'next/navigation';
 
 import { Logo } from '@/components/icons/Logo';
@@ -115,25 +114,17 @@ function NovelCard({ novel }: { novel: Novel }) {
 export default function HomePage() {
   const [novels, setNovels] = useState<Novel[]>(novelsData);
   const [coinBalance, setCoinBalance] = useState(150);
-  const { user } = useAuth();
+  const { user, role, logout } = useAuth();
   const router = useRouter();
   const { toast } = useToast();
   const [recommendations, setRecommendations] = useState<PersonalizedRecommendationsOutput['recommendations'] | null>(null);
   const [isGenerating, setIsGenerating] = useState(false);
 
   const handleLogout = async () => {
-    if (!auth) {
-        toast({ variant: 'destructive', title: 'Firebase not configured.' });
-        return;
-    }
-    try {
-        await signOut(auth);
-        toast({ title: 'Logged out successfully.' });
-        router.push('/login');
-    } catch (error) {
-        toast({ variant: 'destructive', title: 'Logout failed.' });
-    }
-  }
+    await logout();
+    toast({ title: 'Logged out successfully.' });
+    router.push('/login');
+  };
 
   const handleGetRecommendations = async () => {
     setIsGenerating(true);
@@ -213,34 +204,33 @@ export default function HomePage() {
                     <DropdownMenuTrigger asChild>
                         <Button variant="ghost" className="p-0 rounded-full h-8 w-8" title="My Account">
                              <Avatar className="h-8 w-8">
-                                <AvatarImage src={user?.photoURL ?? undefined} />
-                                <AvatarFallback>{user ? (user.displayName?.[0] ?? user.email?.[0] ?? 'U') : <User className="h-5 w-5" />}</AvatarFallback>
+                                <AvatarFallback>{user ? (role === 'admin' ? <Crown/> : <User/>) : <KeySquare />}</AvatarFallback>
                             </Avatar>
                         </Button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end">
                         {user ? (
                             <>
-                                <DropdownMenuLabel>{user.displayName ?? user.email}</DropdownMenuLabel>
+                                <DropdownMenuLabel>
+                                    <span className="capitalize">{role}</span>
+                                </DropdownMenuLabel>
                                 <DropdownMenuSeparator />
-                                <DropdownMenuItem asChild>
-                                    <Link href="/library">
-                                        <BookUser className="mr-2 h-4 w-4" />
-                                        <span>My Library</span>
-                                    </Link>
-                                </DropdownMenuItem>
-                                <DropdownMenuItem asChild>
-                                    <Link href="/creator/dashboard">
-                                        <PenSquare className="mr-2 h-4 w-4" />
-                                        <span>Creator Mode</span>
-                                    </Link>
-                                </DropdownMenuItem>
-                                <DropdownMenuItem asChild>
-                                    <Link href="/admin/dashboard">
-                                        <Crown className="mr-2 h-4 w-4" />
-                                        <span>Admin Mode</span>
-                                    </Link>
-                                </DropdownMenuItem>
+                                {role === 'user' && (
+                                    <DropdownMenuItem asChild>
+                                        <Link href="/library">
+                                            <BookUser className="mr-2 h-4 w-4" />
+                                            <span>My Library</span>
+                                        </Link>
+                                    </DropdownMenuItem>
+                                )}
+                                {role === 'admin' && (
+                                     <DropdownMenuItem asChild>
+                                        <Link href="/admin/dashboard">
+                                            <Crown className="mr-2 h-4 w-4" />
+                                            <span>Creator Panel</span>
+                                        </Link>
+                                    </DropdownMenuItem>
+                                )}
                                 <DropdownMenuItem asChild>
                                     <Link href="/settings">
                                         <Settings className="mr-2 h-4 w-4" />
@@ -258,9 +248,9 @@ export default function HomePage() {
                                 <DropdownMenuLabel>Guest</DropdownMenuLabel>
                                 <DropdownMenuSeparator />
                                 <DropdownMenuItem asChild>
-                                    <Link href="/listener/login">
-                                        <LogOut className="mr-2 h-4 w-4" />
-                                        <span>Login / Sign Up</span>
+                                    <Link href="/login">
+                                        <KeySquare className="mr-2 h-4 w-4" />
+                                        <span>Login with Key</span>
                                     </Link>
                                 </DropdownMenuItem>
                              </>
@@ -333,4 +323,3 @@ export default function HomePage() {
     </div>
   );
 }
-

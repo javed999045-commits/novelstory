@@ -1,0 +1,41 @@
+
+{
+  "keys": [
+    {
+      "key": "USERKEY1",
+      "uses": 0,
+      "limit": -1,
+      "enabled": true,
+      "expires": null,
+      "createdAt": "2024-01-01T00:00:00.000Z",
+      "lastUsed": null
+    },
+    {
+      "key": "USERKEY2",
+      "uses": 1,
+      "limit": 5,
+      "enabled": true,
+      "expires": "2025-12-31T23:59:59.000Z",
+      "createdAt": "2024-01-01T00:00:00.000Z",
+      "lastUsed": "2024-07-28T10:00:00.000Z"
+    },
+    {
+      "key": "USERKEY3",
+      "uses": 1,
+      "limit": 1,
+      "enabled": true,
+      "expires": null,
+      "createdAt": "2024-01-01T00:00:00.000Z",
+      "lastUsed": "2024-07-27T12:00:00.000Z"
+    },
+    {
+      "key": "USERKEY4",
+      "uses": 0,
+      "limit": 10,
+      "enabled": false,
+      "expires": null,
+      "createdAt": "2024-01-01T00:00:00.000Z",
+      "lastUsed": null
+    }
+  ]
+}

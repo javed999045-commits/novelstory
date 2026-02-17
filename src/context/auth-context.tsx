@@ -1,73 +1,115 @@
 
 'use client';
 
-import { createContext, useContext, useEffect, useState, ReactNode } from 'react';
-import { onAuthStateChanged, User, getRedirectResult } from 'firebase/auth';
+import { createContext, useContext, useEffect, useState, ReactNode, useCallback } from 'react';
+import { onAuthStateChanged, User, signInAnonymously, signOut } from 'firebase/auth';
 import { auth } from '@/lib/firebase';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useToast } from '@/hooks/use-toast';
 import { useRouter } from 'next/navigation';
+import allKeys from '@/lib/keys.json';
+
+type Role = 'user' | 'admin' | null;
 
 type AuthContextType = {
   user: User | null;
+  role: Role;
   loading: boolean;
+  loginWithKey: (key: string) => Promise<{ success: boolean; role?: Role; message?: string }>;
+  logout: () => Promise<void>;
 };
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
+  const [role, setRole] = useState<Role>(null);
   const [loading, setLoading] = useState(true);
   const { toast } = useToast();
-  const router = useRouter();
+
+  const masterKey = process.env.NEXT_PUBLIC_MASTER_KEY;
+
+  const validateKey = useCallback((key: string): { valid: boolean; role: Role; message?: string } => {
+    if (key === masterKey) {
+        return { valid: true, role: 'admin' };
+    }
+    
+    const userKey = allKeys.keys.find(k => k.key === key);
+    
+    if (userKey) {
+        if (!userKey.enabled) {
+            return { valid: false, role: null, message: "This key has been disabled." };
+        }
+        if (userKey.expires && new Date(userKey.expires) < new Date()) {
+            return { valid: false, role: null, message: "This key has expired." };
+        }
+        if (userKey.limit !== -1 && userKey.uses >= userKey.limit) {
+            return { valid: false, role: null, message: "This key has reached its usage limit." };
+        }
+        return { valid: true, role: 'user' };
+    }
+
+    return { valid: false, role: null, message: "Invalid Key. Please contact creator." };
+  }, [masterKey]);
+
+  const loginWithKey = useCallback(async (key: string) => {
+    if (!auth) {
+        return { success: false, message: 'Firebase not configured.' };
+    }
+
+    const validation = validateKey(key);
+
+    if (validation.valid) {
+        try {
+            const userCredential = await signInAnonymously(auth);
+            setUser(userCredential.user);
+            setRole(validation.role);
+            if (typeof window !== 'undefined') {
+                localStorage.setItem('userRole', validation.role as string);
+            }
+            return { success: true, role: validation.role };
+        } catch (error: any) {
+            console.error("Anonymous sign-in failed:", error);
+            return { success: false, message: `Firebase error: ${error.message}` };
+        }
+    } else {
+        return { success: false, message: validation.message };
+    }
+  }, [validateKey]);
+
+  const logout = useCallback(async () => {
+    if (!auth) return;
+    try {
+      await signOut(auth);
+      setUser(null);
+      setRole(null);
+      if (typeof window !== 'undefined') {
+        localStorage.removeItem('userRole');
+      }
+    } catch (error: any) {
+      toast({ variant: 'destructive', title: 'Logout failed', description: error.message });
+    }
+  }, [toast]);
 
   useEffect(() => {
     if (!auth) {
         setLoading(false);
         return;
     }
-
-    // First, check for a redirect result from Google Sign-In
-    getRedirectResult(auth)
-      .then((result) => {
-        if (result) {
-          // User has just signed in via redirect.
-          toast({ title: 'Logged in successfully!' });
-
-          const role = localStorage.getItem('loginRedirectRole');
-          if (role === 'creator') {
-            localStorage.removeItem('loginRedirectRole');
-            router.replace('/creator/dashboard');
-          } else {
-            // Default to home page for listeners or if no role is set
-            router.replace('/home');
-          }
-        }
-      }).catch((error) => {
-        // Handle Errors here.
-        if (error.code === 'auth/configuration-not-found') {
-            toast({ 
-                variant: 'destructive', 
-                title: 'Login failed: Configuration not found.', 
-                description: 'Please ensure Google Sign-in is enabled in your Firebase console and a support email is set.',
-                duration: 10000
-            });
-        } else {
-            toast({ variant: 'destructive', title: `Login failed: ${error.code}`, description: error.message });
-        }
-      });
-    
-    // Then, set up the auth state listener
     const unsubscribe = onAuthStateChanged(auth, (user) => {
-      if (user && window.localStorage.getItem('emailForSignIn')) {
-          window.localStorage.removeItem('emailForSignIn');
-      }
       setUser(user);
+      if (user) {
+        const storedRole = localStorage.getItem('userRole') as Role;
+        setRole(storedRole);
+      } else {
+        setRole(null);
+        localStorage.removeItem('userRole');
+      }
       setLoading(false);
     });
 
     return () => unsubscribe();
-  }, [toast, router]);
+  }, []);
 
   if (loading) {
     return (
@@ -79,7 +121,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }
 
   return (
-    <AuthContext.Provider value={{ user, loading }}>
+    <AuthContext.Provider value={{ user, role, loading, loginWithKey, logout }}>
       {children}
     </AuthContext.Provider>
   );
