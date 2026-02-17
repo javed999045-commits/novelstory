@@ -1,11 +1,10 @@
-
 'use client'
 
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
+import { useRouter, useParams } from 'next/navigation';
 
 import { Button } from '@/components/ui/button';
 import {
@@ -45,7 +44,8 @@ const formSchema = z.object({
   status: z.string().default('published'),
 });
 
-export default function EditEpisodePage({ params }: { params: { novelId: string, episodeId: string } }) {
+export default function EditEpisodePage() {
+  const params = useParams<{ novelId: string, episodeId: string }>();
   const { toast } = useToast();
   const router = useRouter();
   const form = useForm<z.infer<typeof formSchema>>({
@@ -216,4 +216,3 @@ export default function EditEpisodePage({ params }: { params: { novelId: string,
     </div>
   );
 }
-

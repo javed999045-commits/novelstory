@@ -1,8 +1,7 @@
-
 'use client'
 
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
+import { useRouter, useParams } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import {
   Card,
@@ -24,7 +23,8 @@ const episodes = [
     { id: 'ep5', title: 'The Attic (Draft)', duration: 'Not uploaded', price: 'Not set', status: 'Draft' },
 ]
 
-export default function NovelEditPage({ params }: { params: { novelId: string } }) {
+export default function NovelEditPage() {
+    const params = useParams<{ novelId: string }>();
     const router = useRouter();
 
   return (
